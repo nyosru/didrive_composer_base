@@ -1,0 +1,47 @@
+{
+    "name": "nyos/f",
+    "description": "This is a simple nyos function for sites",
+    "version": "1.0.3",
+    
+    "keywords": [
+        "nyos", "uralweb.info"
+    ],
+    
+    "homepage": "https://uralweb.info/php/#classes",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Сергей Бакланов",
+            "email": "1@nyos.ru",
+            "homepage": "https://uralweb.info",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.1.0"
+        ,
+        "twig/twig" : ">=2.0.0"
+        ,
+        "nyos/f" : ">=1.0.3"
+        ,
+        "nyos/api" : ">=0.0.8"
+        ,
+        "nyos/msg" : ">=0.0.1"
+        ,
+        "didrive_mod/items" : ">=0.0.1"
+    }
+    ,
+    "autoload": {
+        "classmap": [ 
+            "class/Nyos.php",
+            "class/nyos_image.php",
+            "f/ajax.php",
+            "f/db.php",
+            "f/file.php",
+            "f/http.php",
+            "f/smarty.php",
+            "f/text.php",
+            "f/txt.php"
+            ]    
+        }
+}
