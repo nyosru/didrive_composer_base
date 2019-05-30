@@ -1,7 +1,7 @@
 {
-    "name": "nyos/f",
-    "description": "This is a simple nyos function for sites",
-    "version": "1.0.3",
+    "name": "didrive/base",
+    "description": "class and function didrive cms",
+    "version": "0.0.1",
     
     "keywords": [
         "nyos", "uralweb.info"
@@ -22,25 +22,23 @@
         ,
         "twig/twig" : ">=2.0.0"
         ,
-        "nyos/f" : ">=1.0.3"
-        ,
-        "nyos/api" : ">=0.0.8"
-        ,
         "nyos/msg" : ">=0.0.1"
-        ,
-        "didrive_mod/items" : ">=0.0.1"
     }
     ,
     "autoload": {
         "classmap": [ 
             "class/Nyos.php",
             "class/nyos_image.php",
+            "class/mail.php",
+            "class/mail.pop3.php",
+            
+            "f/exception.nyosex.php",
+            
+            "f/twig.function.php",
             "f/ajax.php",
             "f/db.php",
             "f/file.php",
             "f/http.php",
-            "f/smarty.php",
-            "f/text.php",
             "f/txt.php"
             ]    
         }
