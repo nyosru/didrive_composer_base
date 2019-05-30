@@ -1,7 +1,7 @@
 {
     "name": "didrive/base",
     "description": "didrive cms - class and function ",
-    "version": "0.0.9",
+    "version": "0.0.10",
 
     "keywords": [
         "nyos",
@@ -28,9 +28,9 @@
     ,
     "autoload": {
         
-        "psr-0" : {
-            "mod" : "mod/Nyos.php"
-        }
+        "files" : [
+            "mod/Nyos.php"
+        ]
         
     }
 }
