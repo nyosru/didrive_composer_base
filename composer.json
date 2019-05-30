@@ -1,7 +1,7 @@
 {
     "name": "didrive/base",
     "description": "didrive cms - class and function ",
-    "version": "0.0.3",
+    "version": "0.0.5",
 
     "keywords": [
         "nyos",
@@ -22,25 +22,16 @@
         "php": ">=7.1.0"
         ,
         "twig/twig": ">=2.0.0"
+        ,
+        "didrive/f": ">=1.0.0"
     }
     ,
     "autoload": {
         "classmap": [ 
-
             "class/Nyos.php",
             "class/nyos_image.php",
             "class/mail.php",
-            "class/mail.pop3.php",
-
-            "f/exception.nyosex.php",
-
-            "f/twig.function.php",
-            "f/ajax.php",
-            "f/db.php",
-            "f/file.php",
-            "f/http.php",
-            "f/txt.php"
-
+            "class/mail.pop3.php"
         ]    
     }
 }
