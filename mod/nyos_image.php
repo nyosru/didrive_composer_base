@@ -1,6 +1,6 @@
 <?php
 
-namespace Nyos;
+namespace Nyos\mod;
 
 // строки безопасности
 
