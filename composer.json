@@ -1,7 +1,7 @@
 {
     "name": "didrive/base",
     "description": "didrive cms - class and function ",
-    "version": "0.0.6",
+    "version": "0.0.7",
 
     "keywords": [
         "nyos",
@@ -28,10 +28,7 @@
     ,
     "autoload": {
         "classmap": [ 
-            "class/Nyos.php",
-            "class/nyos_image.php",
-            "class/mail.php",
-            "class/mail.pop3.php"
+            "mod"
         ]    
     }
 }
