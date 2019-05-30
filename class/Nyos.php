@@ -274,7 +274,8 @@ class Nyos {
          */
         define('dir_mods_mod_vers_didrive_tpl', DS . 'vendor' . DS . 'didrive_mod' . DS . $vv['now_level']['type'] . DS . $vv['now_level']['version'] . DS . 'didrive' . DS . 't' . DS);
 
-        self::$cash_file_menu = DR . dir_site . \f\translit(domain, 'uri2') . '.cash.mnu.json';
+        //self::$cash_file_menu = DR . dir_site . \f\translit(domain, 'uri2') . '.cash.mnu.json';
+        self::$cash_file_menu = DR . dir_site . domain . '.cash.mnu.json';
     }
 
     /**
