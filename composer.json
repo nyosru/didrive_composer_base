@@ -1,12 +1,13 @@
 {
     "name": "didrive/base",
-    "description": "class and function didrive cms",
-    "version": "0.0.2",
-    
+    "description": "didrive cms - class and function ",
+    "version": "0.0.3",
+
     "keywords": [
-        "nyos", "uralweb.info"
+        "nyos",
+        "uralweb.info"
     ],
-    
+
     "homepage": "https://uralweb.info/php/#classes",
     "license": "MIT",
     "authors": [
@@ -20,26 +21,26 @@
     "require": {
         "php": ">=7.1.0"
         ,
-        "twig/twig" : ">=2.0.0"
-        ,
-        "nyos/msg" : ">=0.0.1"
+        "twig/twig": ">=2.0.0"
     }
     ,
     "autoload": {
         "classmap": [ 
+
             "class/Nyos.php",
             "class/nyos_image.php",
             "class/mail.php",
             "class/mail.pop3.php",
-            
+
             "f/exception.nyosex.php",
-            
+
             "f/twig.function.php",
             "f/ajax.php",
             "f/db.php",
             "f/file.php",
             "f/http.php",
             "f/txt.php"
-            ]    
-        }
+
+        ]    
+    }
 }
