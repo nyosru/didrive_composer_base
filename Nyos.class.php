@@ -141,8 +141,10 @@ class Nyos {
             define('domain', $vv['domain']);
 
         if ($folder === null && is_dir($_SERVER['DOCUMENT_ROOT'] . DS . 'site' . DS)) {
+            $vv['dir_site'] = 
             $site_dir = DS . 'site' . DS;
         } elseif (is_dir($_SERVER['DOCUMENT_ROOT'] . DS . 'sites' . DS . $folder . DS)) {
+            $vv['dir_site'] = 
             $site_dir = DS . 'sites' . DS . $folder . DS;
         }
 
@@ -155,6 +157,7 @@ class Nyos {
          * корень сайта
          */
         define('DR', $_SERVER['DOCUMENT_ROOT']);
+        $vv['DR'] = $_SERVER['DOCUMENT_ROOT'];
 
         /**
          * /папка сайта/
@@ -254,25 +257,27 @@ class Nyos {
          */
         define('dir_mods', DS . 'vendor' . DS . 'didrive_mod' . DS);
         /**
-         * /модули/текущий модуль (тип)/
+         * /вендор/модули/текущий модуль (тип)/
          */
         define('dir_mods_mod', DS . 'vendor' . DS . 'didrive_mod' . DS . $vv['now_level']['type'] . DS);
         /**
-         * /модули/текущий модуль (тип)/версия/
+         * /вендор/модули/текущий модуль (тип)/версия/
          */
         define('dir_mods_mod_vers', DS . 'vendor' . DS . 'didrive_mod' . DS . $vv['now_level']['type'] . DS . $vv['now_level']['version'] . DS);
         /**
-         * /модули/текущий модуль (тип)/версия/tpl/
+         * /вендор/модули/текущий модуль (тип)/версия/tpl/
          */
         define('dir_mods_mod_vers_tpl', DS . 'vendor' . DS . 'didrive_mod' . DS . $vv['now_level']['type'] . DS . $vv['now_level']['version'] . DS . 'tpl' . DS);
         /**
          * /модули/текущий модуль (тип)/версия/didrive/
          */
         define('dir_mods_mod_vers_didrive', DS . 'vendor' . DS . 'didrive_mod' . DS . $vv['now_level']['type'] . DS . $vv['now_level']['version'] . DS . 'didrive' . DS);
+        
         /**
          * /модули/текущий модуль (тип)/версия/didrive/tpl/
          */
-        define('dir_mods_mod_vers_didrive_tpl', DS . 'vendor' . DS . 'didrive_mod' . DS . $vv['now_level']['type'] . DS . $vv['now_level']['version'] . DS . 'didrive' . DS . 't' . DS);
+        define('dir_mods_mod_vers_didrive_tpl', DS . 'vendor' . DS . 'didrive_mod' . DS . $vv['now_level']['type'] . DS . $vv['now_level']['version'] . DS . 'didrive' . DS . 'tpl' . DS);
+        //define('dir_mods_mod_vers_didrive_tpl', DS . 'vendor' . DS . 'didrive_mod' . DS . $vv['now_level']['type'] . DS . $vv['now_level']['version'] . DS . 'didrive' . DS . 't' . DS);
 
         //self::$cash_file_menu = DR . dir_site . \f\translit(domain, 'uri2') . '.cash.mnu.json';
         self::$cash_file_menu = DR . dir_site . domain . '.cash.mnu.json';
