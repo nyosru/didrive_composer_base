@@ -1,7 +1,7 @@
 {
     "name": "didrive/base",
     "description": "didrive cms - class and function ",
-    "version": "0.0.10",
+    "version": "0.0.11",
 
     "keywords": [
         "nyos",
@@ -29,7 +29,8 @@
     "autoload": {
         
         "files" : [
-            "mod/Nyos.php"
+            "Nyos.class.php",
+            "Nyos_image.class.php"
         ]
         
     }
