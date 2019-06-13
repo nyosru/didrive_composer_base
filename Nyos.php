@@ -7,7 +7,7 @@ if (!defined('IN_NYOS_PROJECT'))
     <a href="http://www.uralweb.info" target="_blank">Создание, дизайн, вёрстка и программирование сайтов.</a><br />
     <a href="http://www.nyos.ru" target="_blank">Только отдельные услуги: Дизайн, вёрстка и программирование сайтов.</a>');
 
-//echo '<Br/>'.__FILE__ .' ['.__LINE__.']';
+// echo '<Br/>'.__FILE__ .' ['.__LINE__.']';
 
 
 class Nyos {
@@ -15,6 +15,10 @@ class Nyos {
 //    public static $logs = '';
     public static $menu = false;
     public static $a_menu = [];
+    
+    // массив модулей которые допускаем $access_mod[] = модуль $access_mod[] = модуль
+    public static $access_mod = '';
+    
 //    public static $folder = '';
 //    public static $connecttype = FALSE; // CURL / SOCKET / NONE / FALSE
     public static $folder_now = null;
@@ -296,6 +300,9 @@ class Nyos {
         $h = scandir(DR . dir_site_module);
 
         foreach ($h as $k => $v) {
+            
+            if ( !empty(\Nyos\Nyos::$access_mod) && isset(\Nyos\Nyos::$access_mod[$v]) ){}else{ continue; }
+                
             if (isset($v{2})) {
                 $file_cfg = DR . dir_site_module . $v . DS . 'cfg.ini';
                 if (file_exists($file_cfg)) {
