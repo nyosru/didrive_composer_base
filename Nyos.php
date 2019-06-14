@@ -15,10 +15,8 @@ class Nyos {
 //    public static $logs = '';
     public static $menu = false;
     public static $a_menu = [];
-    
     // массив модулей которые допускаем $access_mod[] = модуль $access_mod[] = модуль
     public static $access_mod = '';
-    
 //    public static $folder = '';
 //    public static $connecttype = FALSE; // CURL / SOCKET / NONE / FALSE
     public static $folder_now = null;
@@ -37,20 +35,19 @@ class Nyos {
      * @return string или null
      * @throws \NyosEx
      */
-    public static function getFolder( string $domain0 = null ) {
+    public static function getFolder(string $domain0 = null) {
 
-        if ( empty($domain0) ) {
-            
+        if (empty($domain0)) {
+
             $now = true;
-            $domain = str_replace('www.', '', strtolower($_SERVER['HTTP_HOST']) );
-            
+            $domain = str_replace('www.', '', strtolower($_SERVER['HTTP_HOST']));
         } else {
-            
+
             $now = false;
-            $domain = str_replace('www.', '', strtolower($domain0) );
-        }        
-        
-        
+            $domain = str_replace('www.', '', strtolower($domain0));
+        }
+
+
         if (!extension_loaded('PDO')) {
             throw new \Exception(' pdo bd не доступен ');
         }
@@ -145,11 +142,9 @@ class Nyos {
             define('domain', $vv['domain']);
 
         if ($folder === null && is_dir($_SERVER['DOCUMENT_ROOT'] . DS . 'site' . DS)) {
-            $vv['dir_site'] = 
-            $site_dir = DS . 'site' . DS;
+            $vv['dir_site'] = $site_dir = DS . 'site' . DS;
         } elseif (is_dir($_SERVER['DOCUMENT_ROOT'] . DS . 'sites' . DS . $folder . DS)) {
-            $vv['dir_site'] = 
-            $site_dir = DS . 'sites' . DS . $folder . DS;
+            $vv['dir_site'] = $site_dir = DS . 'sites' . DS . $folder . DS;
         }
 
         if (!isset($site_dir{1}))
@@ -216,25 +211,24 @@ class Nyos {
             $vv['level'] = $_GET['level'];
             $vv['now_level'] = \Nyos\Nyos::$menu[$vv['level']];
             $vv['now_level']['cfg.level'] = $vv['level'];
-        } 
+        }
         //
         else if (isset($_GET['level_di']) && isset(\Nyos\Nyos::$menu['di'][$_GET['level_di']])) {
-            
+
             $vv['level'] = $_GET['level_di'];
             $vv['now_level'] = \Nyos\Nyos::$menu['di'][$vv['level']];
             $vv['now_level']['cfg.level'] = $vv['level'];
-            
-        } 
+        }
         //
         else {
             $vv['level'] = '000.index';
-            $vv['now_level'] = \Nyos\Nyos::$menu[$vv['level']];
+            // $vv['now_level'] = \Nyos\Nyos::$menu[$vv['level']];
             $vv['now_level']['cfg.level'] = $vv['level'];
         }
 
 //        echo $vv['level'];
 //        \f\pa($vv['now_level']);
-        
+
         if (!isset($vv['now_level']['cfg.level']))
             throw new \Exception('Нет важных данных в данных о текущем модуле');
 
@@ -260,28 +254,33 @@ class Nyos {
          * /модули/
          */
         define('dir_mods', DS . 'vendor' . DS . 'didrive_mod' . DS);
-        /**
-         * /вендор/модули/текущий модуль (тип)/
-         */
-        define('dir_mods_mod', DS . 'vendor' . DS . 'didrive_mod' . DS . $vv['now_level']['type'] . DS);
-        /**
-         * /вендор/модули/текущий модуль (тип)/версия/
-         */
-        define('dir_mods_mod_vers', DS . 'vendor' . DS . 'didrive_mod' . DS . $vv['now_level']['type'] . DS . $vv['now_level']['version'] . DS);
-        /**
-         * /вендор/модули/текущий модуль (тип)/версия/tpl/
-         */
-        define('dir_mods_mod_vers_tpl', DS . 'vendor' . DS . 'didrive_mod' . DS . $vv['now_level']['type'] . DS . $vv['now_level']['version'] . DS . 'tpl' . DS);
-        /**
-         * /модули/текущий модуль (тип)/версия/didrive/
-         */
-        define('dir_mods_mod_vers_didrive', DS . 'vendor' . DS . 'didrive_mod' . DS . $vv['now_level']['type'] . DS . $vv['now_level']['version'] . DS . 'didrive' . DS);
-        
-        /**
-         * /модули/текущий модуль (тип)/версия/didrive/tpl/
-         */
-        define('dir_mods_mod_vers_didrive_tpl', DS . 'vendor' . DS . 'didrive_mod' . DS . $vv['now_level']['type'] . DS . $vv['now_level']['version'] . DS . 'didrive' . DS . 'tpl' . DS);
-        //define('dir_mods_mod_vers_didrive_tpl', DS . 'vendor' . DS . 'didrive_mod' . DS . $vv['now_level']['type'] . DS . $vv['now_level']['version'] . DS . 'didrive' . DS . 't' . DS);
+
+
+        if (isset($vv['now_level']['type'])) {
+            /**
+             * /вендор/модули/текущий модуль (тип)/
+             */
+            define('dir_mods_mod', DS . 'vendor' . DS . 'didrive_mod' . DS . $vv['now_level']['type'] . DS);
+            /**
+             * /вендор/модули/текущий модуль (тип)/версия/
+             */
+            define('dir_mods_mod_vers', DS . 'vendor' . DS . 'didrive_mod' . DS . $vv['now_level']['type'] . DS . $vv['now_level']['version'] . DS);
+            /**
+             * /вендор/модули/текущий модуль (тип)/версия/tpl/
+             */
+            define('dir_mods_mod_vers_tpl', DS . 'vendor' . DS . 'didrive_mod' . DS . $vv['now_level']['type'] . DS . $vv['now_level']['version'] . DS . 'tpl' . DS);
+            /**
+             * /модули/текущий модуль (тип)/версия/didrive/
+             */
+            define('dir_mods_mod_vers_didrive', DS . 'vendor' . DS . 'didrive_mod' . DS . $vv['now_level']['type'] . DS . $vv['now_level']['version'] . DS . 'didrive' . DS);
+
+            /**
+             * /модули/текущий модуль (тип)/версия/didrive/tpl/
+             */
+            define('dir_mods_mod_vers_didrive_tpl', DS . 'vendor' . DS . 'didrive_mod' . DS . $vv['now_level']['type'] . DS . $vv['now_level']['version'] . DS . 'didrive' . DS . 'tpl' . DS);
+            //define('dir_mods_mod_vers_didrive_tpl', DS . 'vendor' . DS . 'didrive_mod' . DS . $vv['now_level']['type'] . DS . $vv['now_level']['version'] . DS . 'didrive' . DS . 't' . DS);
+        }
+
 
         //self::$cash_file_menu = DR . dir_site . \f\translit(domain, 'uri2') . '.cash.mnu.json';
         self::$cash_file_menu = DR . dir_site . domain . '.cash.mnu.json';
@@ -299,10 +298,22 @@ class Nyos {
         //\f\pa(DirSite);
         $h = scandir(DR . dir_site_module);
 
+        // echo '<Br/>'.__FILE__.' '.__LINE__;
+
         foreach ($h as $k => $v) {
-            
-            if ( !empty(\Nyos\Nyos::$access_mod) && isset(\Nyos\Nyos::$access_mod[$v]) ){}else{ continue; }
-                
+
+            /**
+             * если чем модератор, то проверяем на что есть доступ и на что нет
+             */
+            if (isset($_SESSION['now_user_di']['access']) && $_SESSION['now_user_di']['access'] == 'moder') {
+                if (!empty(\Nyos\Nyos::$access_mod) && isset(\Nyos\Nyos::$access_mod[$v])) {
+                    // echo '<Br/>'.__FILE__.' '.__LINE__;
+                } else {
+                    // echo '<Br/>'.__FILE__.' '.__LINE__;
+                    continue;
+                }
+            }
+
             if (isset($v{2})) {
                 $file_cfg = DR . dir_site_module . $v . DS . 'cfg.ini';
                 if (file_exists($file_cfg)) {
