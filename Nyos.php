@@ -323,8 +323,12 @@ class Nyos {
                     $a = parse_ini_file($file_cfg, true);
                     if (isset($a['type']{0}) && isset($a['version']{0})) {
                         $a['cfg.level'] = $v;
-                        if (isset($_SESSION['now_user_di']['access']) && $_SESSION['now_user_di']['access'] == 'moder' &&
-                                !empty(\Nyos\Nyos::$access_mod) && isset(\Nyos\Nyos::$access_mod[$v])) {
+                        if ( isset($_SESSION['now_user_di']['access']) && 
+                                ( 
+                                $_SESSION['now_user_di']['access'] == 'admin' 
+                                || ( $_SESSION['now_user_di']['access'] == 'moder' && !empty(\Nyos\Nyos::$access_mod) && isset(\Nyos\Nyos::$access_mod[$v]) ) 
+                                ) 
+                            ) {
                             self::$a_menu[$v] = $a;
                         }
                         self::$all_menu[$v] = $a;
@@ -343,8 +347,12 @@ class Nyos {
                     if (isset($a['type']{0}) && isset($a['version']{0})) {
                         $a['cfg.level'] = $v;
 
-                        if (isset($_SESSION['now_user_di']['access']) && $_SESSION['now_user_di']['access'] == 'moder' &&
-                                !empty(\Nyos\Nyos::$access_mod) && isset(\Nyos\Nyos::$access_mod[$v])) {
+                        if ( isset($_SESSION['now_user_di']['access']) && 
+                                ( 
+                                $_SESSION['now_user_di']['access'] == 'admin' 
+                                || ( $_SESSION['now_user_di']['access'] == 'moder' && !empty(\Nyos\Nyos::$access_mod) && isset(\Nyos\Nyos::$access_mod[$v]) ) 
+                                ) 
+                            ) {
                             self::$a_menu['di'][$v] = $a;
                         }
 

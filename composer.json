@@ -1,7 +1,7 @@
 {
     "name": "didrive/base",
     "description": "didrive cms - class and function ",
-    "version": "0.0.14",
+    "version": "0.1.0",
 
     "keywords": [
         "nyos",
