@@ -15,6 +15,7 @@ class Nyos {
 //    public static $logs = '';
     public static $menu = false;
     public static $a_menu = [];
+    public static $all_menu = [];
     // массив модулей которые допускаем $access_mod[] = модуль $access_mod[] = модуль
     public static $access_mod = '';
 //    public static $folder = '';
@@ -206,6 +207,8 @@ class Nyos {
 // формируем \Nyos\Nyos::$menu         
         self::getMenu($folder);
 
+        // \f\pa(\Nyos\Nyos::$menu);
+        // \f\pa($_GET);
         //
         if (isset($_GET['level']) && isset(\Nyos\Nyos::$menu[$_GET['level']])) {
             $vv['level'] = $_GET['level'];
@@ -305,14 +308,14 @@ class Nyos {
             /**
              * если чем модератор, то проверяем на что есть доступ и на что нет
              */
-            if (isset($_SESSION['now_user_di']['access']) && $_SESSION['now_user_di']['access'] == 'moder') {
-                if (!empty(\Nyos\Nyos::$access_mod) && isset(\Nyos\Nyos::$access_mod[$v])) {
-                    // echo '<Br/>'.__FILE__.' '.__LINE__;
-                } else {
-                    // echo '<Br/>'.__FILE__.' '.__LINE__;
-                    continue;
-                }
-            }
+//            if (isset($_SESSION['now_user_di']['access']) && $_SESSION['now_user_di']['access'] == 'moder') {
+//                if (!empty(\Nyos\Nyos::$access_mod) && isset(\Nyos\Nyos::$access_mod[$v])) {
+//                    // echo '<Br/>'.__FILE__.' '.__LINE__;
+//                } else {
+//                    // echo '<Br/>'.__FILE__.' '.__LINE__;
+//                    continue;
+//                }
+//            }
 
             if (isset($v{2})) {
                 $file_cfg = DR . dir_site_module . $v . DS . 'cfg.ini';
@@ -320,7 +323,11 @@ class Nyos {
                     $a = parse_ini_file($file_cfg, true);
                     if (isset($a['type']{0}) && isset($a['version']{0})) {
                         $a['cfg.level'] = $v;
-                        self::$a_menu[$v] = $a;
+                        if (isset($_SESSION['now_user_di']['access']) && $_SESSION['now_user_di']['access'] == 'moder' &&
+                                !empty(\Nyos\Nyos::$access_mod) && isset(\Nyos\Nyos::$access_mod[$v])) {
+                            self::$a_menu[$v] = $a;
+                        }
+                        self::$all_menu[$v] = $a;
                     }
                 }
             }
@@ -335,7 +342,13 @@ class Nyos {
                     $a = parse_ini_file($file_cfg, true);
                     if (isset($a['type']{0}) && isset($a['version']{0})) {
                         $a['cfg.level'] = $v;
-                        self::$a_menu['di'][$v] = $a;
+
+                        if (isset($_SESSION['now_user_di']['access']) && $_SESSION['now_user_di']['access'] == 'moder' &&
+                                !empty(\Nyos\Nyos::$access_mod) && isset(\Nyos\Nyos::$access_mod[$v])) {
+                            self::$a_menu['di'][$v] = $a;
+                        }
+
+                        self::$all_menu['di'][$v] = $a;
                     }
                 }
             }
