@@ -117,7 +117,8 @@ class Nyos {
                 unset($ff);
             } else {
 
-                throw new \NyosEx('непонятная ошибка DB (выбираем папку по домену): ' . $ex->getMessage());
+                throw new \Exception('непонятная ошибка DB (выбираем папку по домену): ' . $ex->getMessage());
+                // throw new \NyosEx('непонятная ошибка DB (выбираем папку по домену): ' . $ex->getMessage());
             }
         }
     }
@@ -295,7 +296,8 @@ class Nyos {
      */
     public static function getSiteModule() {
 
-        if (sizeof(self::$a_menu) > 0)
+        //if ( sizeof(self::$a_menu) > 0)
+        if ( !empty(self::$a_menu) )
             return self::$a_menu;
 
         //\f\pa(DirSite);
@@ -416,8 +418,11 @@ class Nyos {
         else {
 
             self::$menu = [];
+            
+            if( is_dir(DR . dir_site_module) )
             $rf = scandir(DR . dir_site_module);
 
+            if( isset($rf) )
             foreach ($rf as $k => $v) {
 
                 if (isset($v{0}) && $v != '.' && $v != '..' && file_exists(DR . dir_site_module . $v . DS . 'cfg.ini')) {
