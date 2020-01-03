@@ -9,6 +9,55 @@ if (!defined('IN_NYOS_PROJECT'))
     <a href="http://www.uralweb.info" target="_blank">Создание, дизайн, вёрстка и программирование сайтов.</a><br />
     <a href="http://www.nyos.ru" target="_blank">Только отдельные услуги: Дизайн, вёрстка и программирование сайтов.</a>');
 
+
+
+
+
+/*
+Пример #2 Ресэмплирование изображения с сохранением пропорций
+
+В этом примере изображение будет сжато до 200 пикселов по ширине или высоте, смотря что больше.
+<?php
+// файл
+$filename = 'test.jpg';
+
+// задание максимальной ширины и высоты
+$width = 200;
+$height = 200;
+
+// тип содержимого
+header('Content-Type: image/jpeg');
+
+// получение новых размеров
+list($width_orig, $height_orig) = getimagesize($filename);
+
+$ratio_orig = $width_orig/$height_orig;
+
+if ($width/$height > $ratio_orig) {
+   $width = $height*$ratio_orig;
+} else {
+   $height = $width/$ratio_orig;
+}
+
+// ресэмплирование
+$image_p = imagecreatetruecolor($width, $height);
+$image = imagecreatefromjpeg($filename);
+imagecopyresampled($image_p, $image, 0, 0, 0, 0, $width, $height, $width_orig, $height_orig);
+
+// вывод
+imagejpeg($image_p, null, 100);
+?>
+*/
+
+
+
+
+
+
+
+
+
+
 class Nyos_image {
 
     public static $mime = null; // тип обработанного файла
@@ -22,7 +71,6 @@ class Nyos_image {
     /**
      * ответ
      */
-
     public static function o($text, $status = true) {
         $e = array('text' => $text, 'status' => $status);
         self::$status[] = $e;
@@ -81,7 +129,7 @@ class Nyos_image {
                 imagegif(self::$image, $save_to_file);
 
             imagegif(self::$image);
-        } else {
+        } elseif (self::$mime == 'image/jpeg') {
 
             if (isset($save_to_file{3}))
                 imagejpeg(self::$image, $save_to_file);
@@ -115,12 +163,10 @@ class Nyos_image {
      */
     public static function readImage(string $file) {
 
-
         if (!file_exists($file))
             throw new \Exception('нет файла');
 
         self::openImage($file);
-
         self::getSize();
     }
 
@@ -135,6 +181,7 @@ class Nyos_image {
     private static function readType($file) {
 
         $mime = mime_content_type($file);
+        // die($mime);
 
         if ($mime == 'image/jpeg') {
             self::$type = "jpg";
@@ -145,6 +192,9 @@ class Nyos_image {
         } elseif ($mime == 'image/gif') {
             self::$type = "gif";
             return self::o('тип файла gif');
+        } elseif ($mime == 'image/webp') {
+            self::$type = "webp";
+            return self::o('тип файла webp');
         } else {
             return self::o('тип файла непонятный', false);
         }
@@ -995,6 +1045,72 @@ class Nyos_image {
 
         self::$image = $new_image;
         self::getSize();
+    }
+
+    /**
+     * режем квадрат в который встраиваем изображение что в оригинале и на фон его же но больше
+     * @param type $img_origin
+     * @param type $w
+     * @param type $fill
+     * @throws \Exception
+     */
+    public static function creatKvadrat($w = 300, $img_origin = null, $fill = true) {
+
+        if ($img_origin === null)
+            $img_origin = self::$image;
+
+
+        if (self::$height < self::$width) {
+// $w = 100;
+            $xx = ceil($w / (self::$width / 100));
+
+            $x1 = 0;
+            $x2 = $w;
+
+            $y1 = 0;
+            $y2 = ceil(self::$height / 100 * $xx);
+            
+        }
+        elseif (self::$height >= self::$width) {
+
+            $xx = ceil($w / (self::$height / 100));
+
+            $x1 = 0;
+            $x2 = ceil(self::$width / 100 * $xx);
+
+            $y1 = 0;
+            $y2 = $w;
+        }
+        
+        $new_image = imagecreatetruecolor($w, $w);
+
+        imagecopyresampled($new_image, self::$image, 0, 0, 0, 0, $w, $w, self::$width, self::$height);
+        ImageFilter($new_image, IMG_FILTER_GAUSSIAN_BLUR);
+        //ImageFilter($new_image, IMG_FILTER_GAUSSIAN_BLUR, 0.7);        
+        ImageFilter($new_image, IMG_FILTER_BRIGHTNESS, 90);
+
+//        $background = ImageColorAllocate( $new_image, 0, 0, 0); 
+//        $trans = imagecolortransparent( $new_image, $background);
+//        ImageFill($new_image, 0, 0, $background);
+
+
+        if ($w > $x2) {
+            $w1 = ceil(( $w - $x2 ) / 2);
+        } else {
+            $w1 = 0;
+        }
+
+        if ($w > $y2) {
+            $w2 = ceil(( $w - $y2 ) / 2);
+        } else {
+            $w2 = 0;
+        }
+
+        imagecopyresampled($new_image, self::$image, $w1, $w2, 0, 0, $x2, $y2, self::$width, self::$height);
+
+        self::$image = $new_image;
+        // self::getSize();
+        // self::showImage(self::$image);
     }
 
     /*

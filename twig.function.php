@@ -9,8 +9,3 @@
 // });
 // $twig->addFunction($function);
 
-
-$function = new Twig_SimpleFunction('http_build_query', function ( array $ar ) {
-    return http_build_query($ar);
-});
-$twig->addFunction($function);
