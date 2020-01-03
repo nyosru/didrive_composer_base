@@ -117,7 +117,8 @@ class Nyos {
                 unset($ff);
             } else {
 
-                throw new \NyosEx('непонятная ошибка DB (выбираем папку по домену): ' . $ex->getMessage());
+                throw new \Exception('непонятная ошибка DB (выбираем папку по домену): ' . $ex->getMessage());
+                // throw new \NyosEx('непонятная ошибка DB (выбираем папку по домену): ' . $ex->getMessage());
             }
         }
     }
@@ -295,9 +296,20 @@ class Nyos {
      */
     public static function getSiteModule() {
 
-        if (sizeof(self::$a_menu) > 0)
+        // echo '<br/>'.__LINE__;
+        //if ( sizeof(self::$a_menu) > 0)
+        if (!empty(self::$a_menu))
             return self::$a_menu;
+        
+//        $file_cash = DR . dir_site . 'menu.' . substr(\f\translit($_SERVER['HTTP_HOST'], 'uri2'), 0, 15) . '.user.' . $_SESSION['now_user_di']['id'] . '.cash.json';
+//
+//        if (file_exists($file_cash)){
+//            $ar = json_decode(file_get_contents($file_cash), true);
+//            self::$all_menu = $ar['all'];
+//            return self::$a_menu  = $ar['a'];
+//        }
 
+        // echo '<br/>'.__LINE__;
         //\f\pa(DirSite);
         $h = scandir(DR . dir_site_module);
 
@@ -318,17 +330,19 @@ class Nyos {
 //            }
 
             if (isset($v{2})) {
+
+                // \f\pa(\Nyos\Nyos::$access_mod);
+
                 $file_cfg = DR . dir_site_module . $v . DS . 'cfg.ini';
                 if (file_exists($file_cfg)) {
                     $a = parse_ini_file($file_cfg, true);
                     if (isset($a['type']{0}) && isset($a['version']{0})) {
                         $a['cfg.level'] = $v;
-                        if ( isset($_SESSION['now_user_di']['access']) && 
-                                ( 
-                                $_SESSION['now_user_di']['access'] == 'admin' 
-                                || ( $_SESSION['now_user_di']['access'] == 'moder' && !empty(\Nyos\Nyos::$access_mod) && isset(\Nyos\Nyos::$access_mod[$v]) ) 
-                                ) 
-                            ) {
+                        if (isset($_SESSION['now_user_di']['access']) &&
+                                (
+                                $_SESSION['now_user_di']['access'] == 'admin' || ( $_SESSION['now_user_di']['access'] == 'moder' && !empty(\Nyos\Nyos::$access_mod) && isset(\Nyos\Nyos::$access_mod[$v]) )
+                                )
+                        ) {
                             self::$a_menu[$v] = $a;
                         }
                         self::$all_menu[$v] = $a;
@@ -347,12 +361,11 @@ class Nyos {
                     if (isset($a['type']{0}) && isset($a['version']{0})) {
                         $a['cfg.level'] = $v;
 
-                        if ( isset($_SESSION['now_user_di']['access']) && 
-                                ( 
-                                $_SESSION['now_user_di']['access'] == 'admin' 
-                                || ( $_SESSION['now_user_di']['access'] == 'moder' && !empty(\Nyos\Nyos::$access_mod) && isset(\Nyos\Nyos::$access_mod[$v]) ) 
-                                ) 
-                            ) {
+                        if (isset($_SESSION['now_user_di']['access']) &&
+                                (
+                                $_SESSION['now_user_di']['access'] == 'admin' || ( $_SESSION['now_user_di']['access'] == 'moder' && !empty(\Nyos\Nyos::$access_mod) && isset(\Nyos\Nyos::$access_mod[$v]) )
+                                )
+                        ) {
                             self::$a_menu['di'][$v] = $a;
                         }
 
@@ -362,6 +375,8 @@ class Nyos {
             }
         }
 
+//        file_put_contents($file_cash, json_encode(['all' => self::$all_menu, 'a' => self::$a_menu]));
+        
         return self::$a_menu;
     }
 
@@ -416,27 +431,30 @@ class Nyos {
         else {
 
             self::$menu = [];
-            $rf = scandir(DR . dir_site_module);
 
-            foreach ($rf as $k => $v) {
+            if (is_dir(DR . dir_site_module))
+                $rf = scandir(DR . dir_site_module);
 
-                if (isset($v{0}) && $v != '.' && $v != '..' && file_exists(DR . dir_site_module . $v . DS . 'cfg.ini')) {
+            if (isset($rf))
+                foreach ($rf as $k => $v) {
 
-                    try {
-                        self::$menu[$v] = parse_ini_file(DR . dir_site_module . $v . DS . 'cfg.ini', true);
-                        self::$menu[$v]['cfg.level'] = $v;
-                    }
-                    //
-                    catch (\Exception $ex) {
-                        self::$menu[$v] = array(
-                            'error' => $e->getMessage(),
-                            'code' => $e->getCode(),
-                            'file' => $e->getFile(),
-                            'line' => $e->getLine()
-                        );
+                    if (isset($v{0}) && $v != '.' && $v != '..' && file_exists(DR . dir_site_module . $v . DS . 'cfg.ini')) {
+
+                        try {
+                            self::$menu[$v] = parse_ini_file(DR . dir_site_module . $v . DS . 'cfg.ini', true);
+                            self::$menu[$v]['cfg.level'] = $v;
+                        }
+                        //
+                        catch (\Exception $ex) {
+                            self::$menu[$v] = array(
+                                'error' => $e->getMessage(),
+                                'code' => $e->getCode(),
+                                'file' => $e->getFile(),
+                                'line' => $e->getLine()
+                            );
+                        }
                     }
                 }
-            }
 
             //echo DirSite;
             $h = scandir(DR . dir_didr_module);
@@ -797,9 +815,7 @@ class Nyos_old {
             }
 
             return $d;
-        }
-
-        elseif ($type == 'hosting') {
+        } elseif ($type == 'hosting') {
 
 //$status = '';
             $x = $db->sql_query("SELECT *
