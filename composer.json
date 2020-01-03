@@ -1,7 +1,7 @@
 {
     "name": "didrive/base",
     "description": "didrive cms - class and function ",
-    "version": "0.1.7",
+    "version": "0.1.9",
 
     "keywords": [
         "nyos",
@@ -20,11 +20,16 @@
     ],
 
     "require": {
+        "php" : ">=7.1.0"
+        , "twig/twig" : ">=2.0.0"
         
-        "php" : ">=7.1.0",
-        "twig/twig" : ">=2.0.0", 
-        "twbs/bootstrap" : ">=4.3.1" , 
-        "components/jquery" : ">=3.3.1"
+        , "didrive/f" : ">=1.0.0"
+        , "didrive_mod/vars_on_site" : ">=0.0.1"
+        
+        , "twbs/bootstrap" : ">=4.3.1"
+        , "components/jquery" : ">=3.3.1"
+        
+        , "didrive_mod/backword" : ">=0.0.5"
         
     }
     ,
