@@ -69,10 +69,11 @@ $().ready(function () {
         return true;
     }
 
-
-
-
-
+    /**
+     * редактируем доп поле
+     * @param {type} e
+     * @returns {Boolean}
+     */
     var didrive__edit_items_dop_pole = function (e) {
 
         // alert(e);
@@ -91,9 +92,6 @@ $().ready(function () {
 
         var $a_pole_price_id = $('#' + $(this).attr('pole_price_id'));
         var $a_text_in_pole_price_id = $(this).attr('text_in_pole_price_id');
-
-
-
 
         /**
          * удаляем оценку если есть 2 переменные
@@ -157,12 +155,12 @@ $().ready(function () {
 
                     // $div_res.html('<div class="warn good">' + $data['html'] + '</div>');
                     $this.css({"border": "2px solid green"});
-                    
+
                     /**
                      * если есть эти параметры то печатаем в блок нужный текст
                      */
                     if ($a_pole_price_id == null || $a_text_in_pole_price_id == null) {
-                        
+
                     } else {
                         $a_pole_price_id.html($a_text_in_pole_price_id);
                     }
@@ -190,5 +188,88 @@ $().ready(function () {
     };
 
     $('body').on('keyup input', '.didrive__edit_items_dop_pole', $.debounce(1000, didrive__edit_items_dop_pole));
+
+
+
+
+
+    $('body').on('click', '.base_modal_go', function (event) {
+
+        console.log('открыть басе модаль');
+
+        $th = $(this);
+
+        $header = $th.attr('modal_header');
+        $('#di_modal #di_modal_header').html($header);
+
+        $link = $th.attr('ajax_link'); // - || +
+        $vars = $th.attr('ajax_vars'); // - || +
+
+        console.log($link, $vars);
+
+        $.ajax({
+
+            type: 'POST',
+            url: $link,
+            dataType: 'json',
+            data: $vars,
+
+            // сoбытиe дo oтпрaвки
+            beforeSend: function ($data) {
+                $('#di_modal .modal-body').html('<img src="/img/load.gif" alt="" border="" />');
+                // $this.css({"border": "2px solid orange"});
+            },
+            // сoбытиe пoслe удaчнoгo oбрaщeния к сeрвeру и пoлучeния oтвeтa
+            success: function ($data) {
+
+                $('#di_modal .modal-body').html($data['html']);
+
+
+//                // eсли oбрaбoтчик вeрнул oшибку
+//                if ($data['status'] == 'error')
+//                {
+//
+//                    // alert($data['error']); // пoкaжeм eё тeкст
+//                    //$div_res.html('<div class="warn warn">' + $data['html'] + '</div>');
+//                    $this.css({"border": "2px solid red"});
+//
+//                }
+//                // eсли всe прoшлo oк
+//                else
+//                {
+//
+//                    // $div_res.html('<div class="warn good">' + $data['html'] + '</div>');
+//                    $this.css({"border": "2px solid green"});
+//
+//                    // если есть эти параметры то печатаем в блок нужный текст
+//                    if ($a_pole_price_id == null || $a_text_in_pole_price_id == null) {
+//
+//                    } else {
+//                        $a_pole_price_id.html($a_text_in_pole_price_id);
+//                    }
+//
+//                }
+
+            }
+            ,
+            // в случae нeудaчнoгo зaвeршeния зaпрoсa к сeрвeру
+            error: function (xhr, ajaxOptions, thrownError) {
+                // пoкaжeм oтвeт сeрвeрa
+                alert(xhr.status + ' ' + thrownError); // и тeкст oшибки
+            }
+
+// сoбытиe пoслe любoгo исхoдa
+// ,complete: function ($data) {
+// в любoм случae включим кнoпку oбрaтнo
+// $form.find('input[type="submit"]').prop('disabled', false);
+// }
+
+        }); // ajax-
+
+
+
+
+    });
+
 
 });
