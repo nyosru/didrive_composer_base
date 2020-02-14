@@ -191,11 +191,26 @@ $().ready(function () {
 
 
 
-
+    /* грузим базовый модаль и ставим нужные данные
+     <a 
+     href="#" 
+     
+     class="dropdown-item btn-light base_modal_go"
+     
+     data-toggle="modal" data-target="#di_modal" 
+     
+     modal_header='назначения сотрудника'
+     ajax_link='/vendor/didrive_mod/jobdesc/1/didrive/ajax.php'
+     ajax_vars='action=show_naznach&view=html&user={{ man.id }}&s={{ creatSecret( man.id ) }}'
+     
+     >
+     список назначений сотрудника
+     </a>
+     */
 
     $('body').on('click', '.base_modal_go', function (event) {
 
-        console.log('открыть басе модаль');
+        console.log('click .base_modal_go > открыть басе модаль');
 
         $th = $(this);
 
@@ -205,7 +220,55 @@ $().ready(function () {
         $link = $th.attr('ajax_link'); // - || +
         $vars = $th.attr('ajax_vars'); // - || +
 
-        console.log($link, $vars);
+
+
+// спросить делаем не делаем
+        $get_answer = false;
+
+// обновить страницу если загрузили аякс с норм ответом
+        $reload_page_after_ok = false;
+
+        $.each(this.attributes, function () {
+
+            if (this.specified) {
+
+//                if (this.name.indexOf("forajax_") != -1) {
+//                    $uri_query = $uri_query + '&' + this.name.replace('forajax_', '') + '=' + this.value;
+//                    console.log(this.name, this.value);
+//                }
+//                $uri_query = $uri_query + '&' + this.name.replace('forajax_', '') + '=' + this.value;
+
+//                if (this.name == 'hidethis') {
+//                    hidethis = 1;
+//                }
+
+//                if (this.name == 'sp') {
+//                    sp = this.value;
+//                } else if (this.name == 'date') {
+//                    date = this.value;
+//                } else if (this.name == 'res_to_id') {
+//                    resto = '#' + this.value;
+//                } else if (this.name == 'answer') {
+//                    answer = this.value;
+//                }
+
+                if (this.name == 'reload_page_after_ok') {
+                    $reload_page_after_ok = 'ok';
+                } else if (this.name == 'get_answer') {
+                    $get_answer = this.value;
+                }
+
+            }
+
+        });
+
+// спрашиваем если нужно задать вопрос
+        if ($get_answer != false) {
+            if (!confirm($get_answer))
+                return false;
+        }
+
+        // console.log($link, $vars);
 
         $.ajax({
 
@@ -218,12 +281,27 @@ $().ready(function () {
             beforeSend: function ($data) {
                 $('#di_modal .modal-body').html('<img src="/img/load.gif" alt="" border="" />');
                 // $this.css({"border": "2px solid orange"});
+                $("body").append("<div id='body_block' class='body_block' >пару секунд вычисляем<br/><span id='body_block_465'></span></div>");
             },
             // сoбытиe пoслe удaчнoгo oбрaщeния к сeрвeру и пoлучeния oтвeтa
             success: function ($data) {
 
                 $('#di_modal .modal-body').html($data['html']);
 
+// если ошибка
+                if ($data['status'] == 'error') {
+                    $('#body_block').remove();
+                }
+// если не оиибка                
+                else {
+
+                    // если стоит атрибут reload_page_after_ok с каким нить значением и перезагружаем страницу
+                    if ($reload_page_after_ok != false) {
+                        $('#body_block_465').html('<div style="background-color:rgba(0,250,0,0.3);color:black;padding:5px;">готово, обновляю страницу</div>');
+                        location.reload();
+                    }
+
+                }
 
 //                // eсли oбрaбoтчик вeрнул oшибку
 //                if ($data['status'] == 'error')
