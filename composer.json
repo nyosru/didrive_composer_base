@@ -1,7 +1,7 @@
 {
     "name": "didrive/base",
     "description": "didrive cms - class and function ",
-    "version": "0.1.12",
+    "version": "1.0.1",
 
     "keywords": [
         "nyos",
@@ -20,6 +20,7 @@
     ],
 
     "require": {
+        
         "php" : ">=7.1.0"
         , "twig/twig" : ">=2.0.0"
         

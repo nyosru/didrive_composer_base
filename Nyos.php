@@ -181,6 +181,7 @@ class Nyos {
          * /папка сайта/template/
          */
         define('dir_site_tpl', $site_dir . 'template' . DS);
+        
         /**
          * /папка сайта/template.didrive/
          * 2
@@ -241,14 +242,21 @@ class Nyos {
          * /папка сайта/модули/--текущий мод--/
          */
         define('dir_site_module_nowlev', dir_site_module . $vv['now_level']['cfg.level'] . DS);
+        
         /**
          * /папка сайта/модули/--текущий мод--/tpl/
          */
         define('dir_site_module_nowlev_tpl', dir_site_module . $vv['now_level']['cfg.level'] . DS . 'tpl' . DS);
+        
         /**
          * /папка сайта/модули/--текущий мод--/tpl.didrive/
          */
         define('dir_site_module_nowlev_tpldidr', dir_site_module . $vv['now_level']['cfg.level'] . DS . 'tpl.didrive' . DS);
+        
+        /**
+         * /папка сайта/модули/--текущий мод--/tpl.inf/
+         */
+        define('dir_site_module_nowlev_tpl_inf', dir_site_module . $vv['now_level']['cfg.level'] . DS . 'tpl.inf' . DS);
 
 
 
@@ -273,6 +281,10 @@ class Nyos {
              * /вендор/модули/текущий модуль (тип)/версия/tpl/
              */
             define('dir_mods_mod_vers_tpl', DS . 'vendor' . DS . 'didrive_mod' . DS . $vv['now_level']['type'] . DS . $vv['now_level']['version'] . DS . 'tpl' . DS);
+            /**
+             * /вендор/модули/текущий модуль (тип)/версия/tpl.inf/
+             */
+            define('dir_mods_mod_vers_tpl_inf', DS . 'vendor' . DS . 'didrive_mod' . DS . $vv['now_level']['type'] . DS . $vv['now_level']['version'] . DS . 'tpl.inf' . DS);
             /**
              * /модули/текущий модуль (тип)/версия/didrive/
              */
