@@ -306,7 +306,7 @@ class Nyos {
      * формируем менюшку сайта или достаём из файла данных
      * @return type
      */
-    public static function getSiteModule() {
+    public static function getSiteModule_old2004250233() {
 
         // echo '<br/>'.__LINE__;
         //if ( sizeof(self::$a_menu) > 0)
@@ -392,6 +392,114 @@ class Nyos {
         return self::$a_menu;
     }
 
+    
+
+    /**
+     * формируем менюшку сайта или достаём из файла данных
+     * @return type
+     */
+    public static function getSiteModule() {
+
+        if (!empty(self::$a_menu))
+            return self::$a_menu;
+
+        //$timer = true;
+        if (isset($timer) && $timer === true) {
+            \f\timer_start(77);
+        }
+
+
+        $h = scandir(DR . dir_site_module);
+
+        // echo '<Br/>'.__FILE__.' '.__LINE__;
+        // \f\pa($_SESSION);
+
+        foreach ($h as $k => $v) {
+
+            /**
+             * если чем модератор, то проверяем на что есть доступ и на что нет
+             */
+//            if (isset($_SESSION['now_user_di']['access']) && $_SESSION['now_user_di']['access'] == 'moder') {
+//                if (!empty(\Nyos\Nyos::$access_mod) && isset(\Nyos\Nyos::$access_mod[$v])) {
+//                    // echo '<Br/>'.__FILE__.' '.__LINE__;
+//                } else {
+//                    // echo '<Br/>'.__FILE__.' '.__LINE__;
+//                    continue;
+//                }
+//            }
+
+            if (isset($v{2})) {
+
+                // \f\pa(\Nyos\Nyos::$access_mod);
+
+                $file_cfg = DR . dir_site_module . $v . DS . 'cfg.ini';
+
+                if (file_exists($file_cfg)) {
+
+                    $a = parse_ini_file($file_cfg, true);
+
+                    if (isset($a['type']{0}) && isset($a['version']{0})) {
+
+                        $a['cfg.level'] = $v;
+
+                        if (isset($_SESSION['now_user_di']['access']) &&
+                                (
+                                $_SESSION['now_user_di']['access'] == 'admin' ||
+                                (
+                                $_SESSION['now_user_di']['access'] == 'moder' && !empty(\Nyos\Nyos::$access_mod) &&
+                                (
+                                isset(\Nyos\Nyos::$access_mod[$v]) || isset(\Nyos\Nyos::$access_mod['moder'][$v])
+                                ) )
+                                )
+                        ) {
+                            self::$a_menu[$v] = $a;
+                        }
+                        self::$all_menu[$v] = $a;
+                    }
+                }
+            }
+        }
+
+        //echo DirSite;
+        $h = scandir(DR . dir_didr_module);
+        foreach ($h as $k => $v) {
+            if (isset($v{2})) {
+                $file_cfg = DR . dir_didr_module . $v . DS . 'cfg.ini';
+                if (file_exists($file_cfg)) {
+                    $a = parse_ini_file($file_cfg, true);
+                    if (isset($a['type']{0}) && isset($a['version']{0})) {
+                        $a['cfg.level'] = $v;
+
+                        if (!empty($_SESSION['now_user_di']['access']) &&
+                                (
+                                $_SESSION['now_user_di']['access'] == 'admin' ||
+                                (
+                                $_SESSION['now_user_di']['access'] == 'moder' && !empty(\Nyos\Nyos::$access_mod) && (
+                                isset(\Nyos\Nyos::$access_mod[$v]) || isset(\Nyos\Nyos::$access_mod['moder'][$v])
+                                )
+                                )
+                                )
+                        ) {
+                            self::$a_menu['di'][$v] = $a;
+                        }
+
+                        self::$all_menu['di'][$v] = $a;
+                    }
+                }
+            }
+        }
+
+//        file_put_contents($file_cash, json_encode(['all' => self::$all_menu, 'a' => self::$a_menu]));
+
+        if (isset($timer) && $timer === true) {
+            echo '<br/>#' . __LINE__ . ' ' . \f\timer_stop(77);
+        }
+
+        return self::$a_menu;
+    }
+
+            
+    
     /**
      * создаём секрет из строчки
      * @param type $text
