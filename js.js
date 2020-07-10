@@ -1,5 +1,29 @@
-$().ready(function () {
 
+$(document).ready(function () {
+
+//    window.nyos = [];
+//    window.nyos.dolgn = ['123'];
+
+    didrive__get_cash = function (e) {
+
+//        if (typeof window['nyos'] !== 'undefined')
+//            window['nyos'] = [];
+//
+        if (typeof window !== 'undefined' &&
+                typeof window.nyos !== 'undefined' &&
+                typeof window.nyos.dolgn !== 'undefined' && window.nyos.dolgn | length > 0)
+            return [ 1, window.nyos.dolgn ];
+//
+//        return window['nyos']['dolgn'];
+
+        window.nyos = ['dodo'];
+        window.nyos.dolgn = ['234234'];
+        return [ 2 , window.nyos.dolgn ];
+
+        // return ['dolgn'];
+    };
+
+    // didrive__creat_cash();
 
 
 
@@ -9,6 +33,7 @@ $().ready(function () {
      * @param {type} e
      * @returns {Boolean}
      */
+
 
     var didrive__items__new_edit = function (e) {
 
@@ -21,17 +46,17 @@ $().ready(function () {
             if (this.specified) {
 
                 if (this.name == 'href') {
-                    
+
                 } else if (this.name == 'class') {
-                    
+
                 } else if (this.name == 'style') {
-                    
+
                 } else if (this.name == 'value') {
 
                 } else {
-                    
+
                     uri_query = uri_query + '&' + this.name + '=' + this.value;
-                    
+
                 }
 
 
@@ -313,22 +338,12 @@ $().ready(function () {
             didrive__jobdesc__delete_day_ocenka($delete_ocenka_sp, $delete_ocenka_date, $delete_ocenka_s);
         }
 
-
-
-
-
-
-
-
 //        if ($.fn.jobdesc_di__delete_day_ocenka2) {
 //            jobdesc_di__delete_day_ocenka2(1, 33);
 //            console.log('есть функция', 'jobdesc_di__delete_day_ocenka');
 //        } else {
 //            console.log('нет функции', 'jobdesc_di__delete_day_ocenka');
 //        }
-
-
-
 
         $.ajax({
 
@@ -392,7 +407,110 @@ $().ready(function () {
 
     };
 
-    $('body').on('keyup input', '.didrive__edit_items_dop_pole', $.debounce(1000, didrive__edit_items_dop_pole));
+    $(document).on('keyup input', '.didrive__edit_items_dop_pole', $.debounce(1000, didrive__edit_items_dop_pole));
+    $(document).on('keyup input', '.didrive__edit_items_dop_pole2', function () {
+
+
+        // alert(e);
+
+        var $this = $(this);
+        // var $this = e;
+        var $val = $(this).val();
+        // var $val = $this.val();
+
+        var $a_item_id = $(this).attr('edit_item_id');
+        // var $a_item_id = $this.attr('edit_item_id');
+        var $a_dop_name = $(this).attr('edit_dop_name');
+        // var $a_dop_name = $this.attr('edit_dop_name');
+        var $a_s = $(this).attr('edit_s');
+        // var $a_s = $this.attr('edit_s');
+
+        var $a_pole_price_id = $('#' + $(this).attr('pole_price_id'));
+        var $a_text_in_pole_price_id = $(this).attr('text_in_pole_price_id');
+
+        /**
+         * удаляем оценку если есть 2 переменные
+         * @type jQuery
+         */
+        var $delete_ocenka_date = $(this).attr('delete_ocenka_date');
+        var $delete_ocenka_sp = $(this).attr('delete_ocenka_sp');
+        var $delete_ocenka_s = $(this).attr('delete_ocenka_s');
+
+        if ($delete_ocenka_date == null || $delete_ocenka_sp == null || $delete_ocenka_s == null) {
+            console.log('не удаляем оценку дня');
+        } else {
+            console.log('удаляем оценку дня');
+            didrive__jobdesc__delete_day_ocenka($delete_ocenka_sp, $delete_ocenka_date, $delete_ocenka_s);
+        }
+
+//        if ($.fn.jobdesc_di__delete_day_ocenka2) {
+//            jobdesc_di__delete_day_ocenka2(1, 33);
+//            console.log('есть функция', 'jobdesc_di__delete_day_ocenka');
+//        } else {
+//            console.log('нет функции', 'jobdesc_di__delete_day_ocenka');
+//        }
+
+        $.ajax({
+
+            type: 'POST',
+            url: '/vendor/didrive/base/ajax.php',
+            dataType: 'json',
+            data: "action=edit_items_dop&item_id=" + $a_item_id + "&dop_pole=" + $a_dop_name + "&val=" + $val + "&s=" + $a_s,
+
+            // сoбытиe дo oтпрaвки
+            beforeSend: function ($data) {
+                // $div_res.html('<img src="/img/load.gif" alt="" border="" />');
+                $this.css({"border": "2px solid orange"});
+            },
+            // сoбытиe пoслe удaчнoгo oбрaщeния к сeрвeру и пoлучeния oтвeтa
+            success: function ($data) {
+
+                // eсли oбрaбoтчик вeрнул oшибку
+                if ($data['status'] == 'error')
+                {
+
+                    // alert($data['error']); // пoкaжeм eё тeкст
+                    //$div_res.html('<div class="warn warn">' + $data['html'] + '</div>');
+                    $this.css({"border": "2px solid red"});
+
+                }
+                // eсли всe прoшлo oк
+                else
+                {
+
+                    // $div_res.html('<div class="warn good">' + $data['html'] + '</div>');
+                    $this.css({"border": "2px solid green"});
+
+                    /**
+                     * если есть эти параметры то печатаем в блок нужный текст
+                     */
+                    if ($a_pole_price_id == null || $a_text_in_pole_price_id == null) {
+
+                    } else {
+                        $a_pole_price_id.html($a_text_in_pole_price_id);
+                    }
+
+                }
+
+            }
+            ,
+            // в случae нeудaчнoгo зaвeршeния зaпрoсa к сeрвeру
+            error: function (xhr, ajaxOptions, thrownError) {
+                // пoкaжeм oтвeт сeрвeрa
+                alert(xhr.status + ' ' + thrownError); // и тeкст oшибки
+            }
+
+// сoбытиe пoслe любoгo исхoдa
+// ,complete: function ($data) {
+// в любoм случae включим кнoпку oбрaтнo
+// $form.find('input[type="submit"]').prop('disabled', false);
+// }
+
+        }); // ajax-
+
+        return false;
+
+    });
 
     /* грузим базовый модаль и ставим нужные данные
      <a 
@@ -574,7 +692,8 @@ $().ready(function () {
         // var $vars = serialize(this.attributes);
         // var $vars =  JSON.stringify(this.attributes);
 
-        var res_to_id = '';
+        var res_to_id = 0;
+
 //        var $vars = new Array();
         var $uri_query = '';
         var hidethis = 0;
@@ -587,6 +706,9 @@ $().ready(function () {
         var msg_to_success = 0;
         var return1 = 0;
         var href_to_ajax = 0;
+
+        var show_res = 0;
+        var result_success_text = 0;
 
         $.each(this.attributes, function () {
 
@@ -621,7 +743,7 @@ $().ready(function () {
                     }
                     //
                     else if (this.name == 'after_click_showid') {
-                        after_click_showid = '#' + this.value;
+                        after_click_showid = $('#' + this.value);
                     }
                     // сообщение в случае удачи
                     else if (this.name == 'msg_to_success') {
@@ -638,6 +760,14 @@ $().ready(function () {
                         res_to_id = $('#' + this.value);
                         //console.log($vars['resto']);
                         // alert($res_to);
+                    } else if (this.name == 'result_success_text') {
+                        result_success_text = this.value;
+                        //console.log($vars['resto']);
+                        // alert($res_to);
+                    } else if (this.name == 'show_res') {
+                        show_res = 'da';
+                        //console.log($vars['resto']);
+                        // alert($res_to);
                     }
 //
 //                if (this.name == 'show_on_click') {
@@ -649,7 +779,6 @@ $().ready(function () {
 
         });
 
-        res_to_id.html('<img src="/img/load.gif" alt="... обработка ..." border="0" style="max-width:75px;" />');
 
 //        alert($uri_query);
 //        return false;
@@ -657,7 +786,9 @@ $().ready(function () {
         // console.log($vars['resto']);
 
         if (answer != 0 && !confirm(answer)) {
-            res_to_id.html('');
+            if (res_to_id != 0) {
+                res_to_id.html('');
+            }
             return false;
         }
 
@@ -681,8 +812,12 @@ $().ready(function () {
 
             beforeSend: function () {
 
+                if (res_to_id != 0) {
+                    res_to_id.html('<img src="/img/load.gif" alt="... обработка ..." border="0" style="max-width:75px;" />');
+                }
+
                 if (after_click_showid != 0) {
-                    $(after_click_showid).show('slow');
+                    after_click_showid.show('slow');
                 }
 
                 /*

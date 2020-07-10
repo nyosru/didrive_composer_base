@@ -268,7 +268,7 @@ class Nyos {
         define('dir_mods', DS . 'vendor' . DS . 'didrive_mod' . DS);
 
 
-        if (isset($vv['now_level']['type'])) {
+        if ( !empty($vv['now_level']['type']) ) {
             /**
              * /вендор/модули/текущий модуль (тип)/
              */
