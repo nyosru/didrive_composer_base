@@ -2,10 +2,12 @@
 
 namespace Nyos;
 
-if (!defined('IN_NYOS_PROJECT'))
-    die('<center><br><br><br><br><p>Сработала защита <b>c.NYOS</b> от злостных розовых хакеров.</p>
-    <a href="http://www.uralweb.info" target="_blank">Создание, дизайн, вёрстка и программирование сайтов.</a><br />
-    <a href="http://www.nyos.ru" target="_blank">Только отдельные услуги: Дизайн, вёрстка и программирование сайтов.</a>');
+//if (!defined('IN_NYOS_PROJECT'))
+//    die('<center><br><br><br><br><p>Сработала защита <b>c.NYOS</b> от злостных розовых хакеров.</p>
+//    <a href="http://www.uralweb.info" target="_blank">Создание, дизайн, вёрстка и программирование сайтов.</a><br />
+//    <a href="http://www.nyos.ru" target="_blank">Только отдельные услуги: Дизайн, вёрстка и программирование сайтов.</a>'
+//        .'nyos.php');
+//}
 
 // echo '<Br/>'.__FILE__ .' ['.__LINE__.']';
 
@@ -577,8 +579,10 @@ class Nyos {
                 }
 
             //echo DirSite;
+            if( is_dir(DR . dir_didr_module) )
             $h = scandir(DR . dir_didr_module);
 
+            if( !empty($h) )
             foreach ($h as $k => $v) {
                 if (isset($v{2})) {
                     $file_cfg = DR . dir_didr_module . $v . DS . 'cfg.ini';

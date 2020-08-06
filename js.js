@@ -25,15 +25,11 @@ $(document).ready(function () {
 
     // didrive__creat_cash();
 
-
-
-
     /**
      * добавляем заменяем запись в items (1 значение указанов форме, остальные фикс в аттрибутах)
      * @param {type} e
      * @returns {Boolean}
      */
-
 
     var didrive__items__new_edit = function (e) {
 
@@ -221,16 +217,6 @@ $(document).ready(function () {
 
 
 
-
-
-
-
-
-
-
-
-
-
     /**
      * jobdesc удаление оценки дня если есть параметры
      * var $delete_ocenka_day = $(this).attr('delete_ocenka_day');
@@ -299,6 +285,7 @@ $(document).ready(function () {
         return true;
     }
 
+
     /**
      * редактируем доп поле
      * @param {type} e
@@ -306,37 +293,145 @@ $(document).ready(function () {
      */
     var didrive__edit_items_dop_pole = function (e) {
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         // alert(e);
 
         var $this = $(this);
-        // var $this = e;
+        
+        
+        
+        
+        
+        
+        var $uri_query = '';
+
+        $.each(this.attributes, function () {
+
+            if (this.specified) {
+
+                // пропускаем атрибуты
+                if (this.name == 'style' || this.name == 'class' || this.name == 'href') {
+
+                }
+                // обрабатываем атрибуты
+                else {
+
+                    // console.log(this.name, this.value);
+                    $uri_query = $uri_query + '&in_' + this.name + '=' + this.value;
+////
+//                    if (1 == 2) {
+//
+//                    }
+//                    //
+//                    else if (this.name == 'hidethis' && this.value == 'da') {
+//                        hidethis = 1;
+//                    }
+//
+//                    // куда шлём указываем в href
+//                    else if (this.name == 'href_to_ajax') {
+//                        href_to_ajax = this.value;
+//                    }
+//                    // 
+//                    else if (this.name == 'return' && this.value == 'false') {
+//                        return1 = false;
+//                    }
+//                    //
+//                    else if (this.name == 'after_click_showid') {
+//                        after_click_showid = $('#' + this.value);
+//                    }
+//                    // сообщение в случае удачи
+//                    else if (this.name == 'msg_to_success') {
+//                        msg_to_success = this.value;
+//                    }
+//                    //
+//                    else if (this.name == 'answer') {
+//                        answer = this.value;
+//                    }
+////                    else if (this.name == 'msg_to_success') {
+////                        msg_to_success = this.value;
+////                    } 
+//                    else if (this.name == 'res_to_id') {
+//                        res_to_id = $('#' + this.value);
+//                        //console.log($vars['resto']);
+//                        // alert($res_to);
+//                    } else if (this.name == 'result_success_text') {
+//                        result_success_text = this.value;
+//                        //console.log($vars['resto']);
+//                        // alert($res_to);
+//                    } else if (this.name == 'show_res') {
+//                        show_res = 'da';
+//                        //console.log($vars['resto']);
+//                        // alert($res_to);
+//                    }
+//
+//                if (this.name == 'show_on_click') {
+//                    $('#' + this.value).show('slow');
+//                }
+
+                }
+            }
+
+        });
+
+        
+        
+//        
+//        
+//        
+//        
+//        
+//        // var $this = e;
         var $val = $(this).val();
-        // var $val = $this.val();
-
-        var $a_item_id = $(this).attr('edit_item_id');
-        // var $a_item_id = $this.attr('edit_item_id');
-        var $a_dop_name = $(this).attr('edit_dop_name');
-        // var $a_dop_name = $this.attr('edit_dop_name');
-        var $a_s = $(this).attr('edit_s');
-        // var $a_s = $this.attr('edit_s');
-
-        var $a_pole_price_id = $('#' + $(this).attr('pole_price_id'));
-        var $a_text_in_pole_price_id = $(this).attr('text_in_pole_price_id');
-
-        /**
-         * удаляем оценку если есть 2 переменные
-         * @type jQuery
-         */
-        var $delete_ocenka_date = $(this).attr('delete_ocenka_date');
-        var $delete_ocenka_sp = $(this).attr('delete_ocenka_sp');
-        var $delete_ocenka_s = $(this).attr('delete_ocenka_s');
-
-        if ($delete_ocenka_date == null || $delete_ocenka_sp == null || $delete_ocenka_s == null) {
-            console.log('не удаляем оценку дня');
-        } else {
-            console.log('удаляем оценку дня');
-            didrive__jobdesc__delete_day_ocenka($delete_ocenka_sp, $delete_ocenka_date, $delete_ocenka_s);
-        }
+//        // var $val = $this.val();
+//
+//
+//
+//        var $a_item_id = $(this).attr('edit_item_id');
+//        // var $a_item_id = $this.attr('edit_item_id');
+//        var $a_dop_name = $(this).attr('edit_dop_name');
+//        // var $a_dop_name = $this.attr('edit_dop_name');
+//        var $a_s = $(this).attr('edit_s');
+//        // var $a_s = $this.attr('edit_s');
+//
+//        var $a_pole_price_id = $('#' + $(this).attr('pole_price_id'));
+//        var $a_text_in_pole_price_id = $(this).attr('text_in_pole_price_id');
+//
+//        
+//
+//        /**
+//         * удаляем оценку если есть 2 переменные
+//         * @type jQuery
+//         */
+//        var $delete_ocenka_date = $(this).attr('delete_ocenka_date');
+//        var $delete_ocenka_sp = $(this).attr('delete_ocenka_sp');
+//        var $delete_ocenka_s = $(this).attr('delete_ocenka_s');
+//
+//
+//
+//
+//
+//
+//
+//        if ($delete_ocenka_date == null || $delete_ocenka_sp == null || $delete_ocenka_s == null) {
+//            console.log('не удаляем оценку дня');
+//        } else {
+//            console.log('удаляем оценку дня');
+//            didrive__jobdesc__delete_day_ocenka($delete_ocenka_sp, $delete_ocenka_date, $delete_ocenka_s);
+//        }
 
 //        if ($.fn.jobdesc_di__delete_day_ocenka2) {
 //            jobdesc_di__delete_day_ocenka2(1, 33);
@@ -348,9 +443,14 @@ $(document).ready(function () {
         $.ajax({
 
             type: 'POST',
-            url: '/vendor/didrive/base/ajax.php',
+            url: '/vendor/didrive/base/micro-service/edit_items_dop.php',
             dataType: 'json',
-            data: "action=edit_items_dop&item_id=" + $a_item_id + "&dop_pole=" + $a_dop_name + "&val=" + $val + "&s=" + $a_s,
+//            data: "action=edit_items_dop&item_id=" + $a_item_id + "&dop_pole=" + $a_dop_name 
+//                    + "&val=" + $val 
+//                    + "&s=" + $a_s
+//                    + "&data_json=" + $dada
+//            ,
+            data: "new_val="+ $val +"&" + $uri_query ,
 
             // сoбытиe дo oтпрaвки
             beforeSend: function ($data) {
