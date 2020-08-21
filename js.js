@@ -12,13 +12,13 @@ $(document).ready(function () {
         if (typeof window !== 'undefined' &&
                 typeof window.nyos !== 'undefined' &&
                 typeof window.nyos.dolgn !== 'undefined' && window.nyos.dolgn | length > 0)
-            return [ 1, window.nyos.dolgn ];
+            return [1, window.nyos.dolgn];
 //
 //        return window['nyos']['dolgn'];
 
         window.nyos = ['dodo'];
         window.nyos.dolgn = ['234234'];
-        return [ 2 , window.nyos.dolgn ];
+        return [2, window.nyos.dolgn];
 
         // return ['dolgn'];
     };
@@ -311,12 +311,12 @@ $(document).ready(function () {
         // alert(e);
 
         var $this = $(this);
-        
-        
-        
-        
-        
-        
+
+
+
+
+
+
         var $uri_query = '';
 
         $.each(this.attributes, function () {
@@ -387,8 +387,8 @@ $(document).ready(function () {
 
         });
 
-        
-        
+
+
 //        
 //        
 //        
@@ -450,7 +450,7 @@ $(document).ready(function () {
 //                    + "&s=" + $a_s
 //                    + "&data_json=" + $dada
 //            ,
-            data: "new_val="+ $val +"&" + $uri_query ,
+            data: "new_val=" + $val + "&" + $uri_query,
 
             // сoбытиe дo oтпрaвки
             beforeSend: function ($data) {
@@ -994,5 +994,522 @@ $(document).ready(function () {
             return false;
 
     });
+
+
+    /**
+     * субмит формы на указанный в форме адрес
+     */
+    $('body').on('submit', '.base__send_form_ajax', function (event) {
+
+        // console.log('добавляем минус');
+        event.preventDefault();
+
+        var to_ajax = $(this).attr('action');
+
+        var $print_res_to = 0;
+
+        // создание массива объектов из данных формы        
+        var data1 = $(this).serializeArray();
+        // console.log( data1 );
+
+        $.each(data1, function () {
+            console.log(1, this.name + '=' + this.value);
+
+//            if (this.name == 'print_res_to_id') {
+//                $print_res_to = $('#' + this.value);
+//            }
+//            if (this.name == 'print_res_to_id') {
+//                $print_res_to = $('#' + this.value);
+//            }
+//            if (this.name == 'data-target2') {
+//                $modal_id = this.value;
+//            }
+
+
+//                              {# показываем блок после отправки запроса #}
+//                              after_send_show="#res{{sp_now}}{{ now_date }}"
+//
+//                              {# результат сюда #}
+//                              resto="#res{{sp_now}}{{ now_date }}"
+//
+//                              {# что скрыть после успешного выполнения #}
+//                              hide_before_job_ok="#form{{sp_now}}{{ now_date }}"
+
+
+        });
+
+        // alert('123');
+        // return false;
+
+        var resto_id = 0;
+        var hide_before_job_ok = 0;
+        var before_job_ok_reload = 0;
+
+        $.each(this.attributes, function () {
+            if (this.specified) {
+
+                console.log(2, this.name + '=' + this.value);
+
+                //
+                if (this.name == 'after_send_show_id') {
+                    $('#' + this.value).show('slow');
+                }
+                //
+                else if (this.name == 'resto_id') {
+                    resto_id = $('#' + this.value);
+                }
+                //
+                else if (this.name == 'hide_before_job_ok') {
+                    hide_before_job_ok = $(this.value);
+                }
+                //
+                else if (this.name == 'before_job_ok_reload') {
+                    before_job_ok_reload = 1;
+                }
+
+            }
+
+        });
+
+
+        try {
+
+            $.ajax({
+
+                type: 'POST',
+                // xurl: "/sites/yadom_admin/module/000.index/ajax.php",
+                url: to_ajax, // "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
+
+                dataType: 'json',
+                data: data1,
+
+                // сoбытиe дo oтпрaвки
+                beforeSend: function ($data) {
+                    // $div_res.html('<img src="/img/load.gif" alt="" border="" />');
+                    // $this.css({"border": "2px solid orange"});
+                },
+
+                // сoбытиe пoслe удaчнoгo oбрaщeния к сeрвeру и пoлучeния oтвeтa
+                success: function ($data) {
+
+                    //alert('123');
+
+                    // eсли oбрaбoтчик вeрнул oшибку
+                    if ($data['status'] == 'error')
+                    {
+
+                        if (resto_id != 0) {
+                            resto_id.html('произошла ошибка: ' + $data['html']);
+                        }
+
+                    }
+                    // eсли всe прoшлo oк
+                    else
+                    {
+
+                        if (resto_id != 0) {
+                            resto_id.html($data['html']);
+                        }
+
+                        if (hide_before_job_ok != 0)
+                            hide_before_job_ok.hide('slow');
+
+                        if (before_job_ok_reload != 0) {
+                            $("body").append("<div id='body_block' class='body_block' >пару секунд вычисляем<br/><span id='body_block_465'></span></div>");
+                            // $('.di_modal').modal('show');
+                            window.location.reload();
+                        }
+
+
+
+                    }
+
+                }
+                ,
+                // в случae нeудaчнoгo зaвeршeния зaпрoсa к сeрвeру
+                error: function (xhr, ajaxOptions, thrownError) {
+
+                    // пoкaжeм oтвeт сeрвeрa
+                    console.log(xhr, thrownError);
+
+                    if (resto_id != 0) {
+                        resto_id.html('произошла ошибка: ' + xhr.status + ' ' + thrownError + ' ( обратитесь в тех. поддержку ) ');
+                    }
+
+
+                }
+
+                // сoбытиe пoслe любoгo исхoдa
+                // ,complete: function ($data) {
+                // в любoм случae включим кнoпку oбрaтнo
+                // $form.find('input[type="submit"]').prop('disabled', false);
+                // }
+
+            }); // ajax-
+
+        } catch (e) {
+
+        }
+
+
+        return false;
+    });
+
+    /**
+     * отправка данных по клику на чем нить
+     */
+    $('body').on('click', '.base__send_data_ajax', function (event) {
+
+        // console.log('добавляем минус');
+        event.preventDefault();
+
+        var to_ajax = $(this).attr('ajax_go');
+
+        var $print_res_to = 0;
+
+        var data1 = '';
+
+//
+//        // создание массива объектов из данных формы        
+//        var data1 = $(this).serializeArray();
+//        // console.log( data1 );
+//
+//        $.each(data1, function () {
+//            
+//            console.log(1, this.name + '=' + this.value);
+//
+////            if (this.name == 'print_res_to_id') {
+////                $print_res_to = $('#' + this.value);
+////            }
+////            if (this.name == 'print_res_to_id') {
+////                $print_res_to = $('#' + this.value);
+////            }
+////            if (this.name == 'data-target2') {
+////                $modal_id = this.value;
+////            }
+//
+//
+////                              {# показываем блок после отправки запроса #}
+////                              after_send_show="#res{{sp_now}}{{ now_date }}"
+////
+////                              {# результат сюда #}
+////                              resto="#res{{sp_now}}{{ now_date }}"
+////
+////                              {# что скрыть после успешного выполнения #}
+////                              hide_before_job_ok="#form{{sp_now}}{{ now_date }}"
+//
+//
+//        });
+
+        // alert('123');
+        // return false;
+
+        var resto_id = 0;
+        var hide_before_job_ok = 0;
+        var before_job_ok_reload = 0;
+
+        $.each(this.attributes, function () {
+            if (this.specified) {
+
+                console.log(2, this.name + '=' + this.value);
+
+                //
+                if (this.name == 'after_send_show_id') {
+                    $('#' + this.value).show('slow');
+                }
+                //
+                else if (this.name == 'resto_id') {
+                    resto_id = $('#' + this.value);
+                }
+                //
+                else if (this.name == 'hide_before_job_ok') {
+                    hide_before_job_ok = $(this.value);
+                }
+                //
+                else if (this.name == 'before_job_ok_reload') {
+                    before_job_ok_reload = 1;
+                } else {
+                    data1 = data1 + '&' + this.name + '=' + this.value;
+                }
+
+            }
+
+        });
+
+
+        try {
+
+            $.ajax({
+
+                type: 'POST',
+                // xurl: "/sites/yadom_admin/module/000.index/ajax.php",
+                url: to_ajax, // "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
+
+                dataType: 'json',
+                data: 'ee=1' + data1,
+
+                // сoбытиe дo oтпрaвки
+                beforeSend: function ($data) {
+                    // $div_res.html('<img src="/img/load.gif" alt="" border="" />');
+                    // $this.css({"border": "2px solid orange"});
+                },
+
+                // сoбытиe пoслe удaчнoгo oбрaщeния к сeрвeру и пoлучeния oтвeтa
+                success: function ($data) {
+
+                    //alert('123');
+
+                    // eсли oбрaбoтчик вeрнул oшибку
+                    if ($data['status'] == 'error')
+                    {
+
+                        if (resto_id != 0) {
+                            resto_id.html('произошла ошибка: ' + $data['html']);
+                        }
+
+                    }
+                    // eсли всe прoшлo oк
+                    else
+                    {
+
+                        if (resto_id != 0) {
+                            resto_id.html($data['html']);
+                        }
+
+                        if (hide_before_job_ok != 0)
+                            hide_before_job_ok.hide('slow');
+
+                        if (before_job_ok_reload != 0) {
+                            $("body").append("<div id='body_block' class='body_block' >пару секунд вычисляем<br/><span id='body_block_465'></span></div>");
+                            // $('.di_modal').modal('show');
+                            window.location.reload();
+                        }
+
+
+
+                    }
+
+                }
+                ,
+                // в случae нeудaчнoгo зaвeршeния зaпрoсa к сeрвeру
+                error: function (xhr, ajaxOptions, thrownError) {
+
+                    // пoкaжeм oтвeт сeрвeрa
+                    console.log(xhr, thrownError);
+
+                    if (resto_id != 0) {
+                        resto_id.html('произошла ошибка: ' + xhr.status + ' ' + thrownError + ' ( обратитесь в тех. поддержку ) ');
+                    }
+
+
+                }
+
+                // сoбытиe пoслe любoгo исхoдa
+                // ,complete: function ($data) {
+                // в любoм случae включим кнoпку oбрaтнo
+                // $form.find('input[type="submit"]').prop('disabled', false);
+                // }
+
+            }); // ajax-
+
+        } catch (e) {
+
+        }
+
+
+        return false;
+    });
+
+    /**
+     * отправка данных после выбора select
+     */
+    $('body').on('change', '.base__select__send_data_ajax', function (event) {
+
+        console.log('изменяем что то по выбору select');
+
+        event.preventDefault();
+
+        var th = $(this);
+        var $print_res_to = 0;
+        var data1 = '';
+
+//        // создание массива объектов из данных формы        
+        var data12 = $(this).serializeArray();
+//        // console.log( data1 );
+
+        $.each(data12, function () {
+
+            console.log(1, this.name + '=' + this.value);
+            data1 = data1 + '&' + this.name + '=' + this.value;
+
+//
+////            if (this.name == 'print_res_to_id') {
+////                $print_res_to = $('#' + this.value);
+////            }
+////            if (this.name == 'print_res_to_id') {
+////                $print_res_to = $('#' + this.value);
+////            }
+////            if (this.name == 'data-target2') {
+////                $modal_id = this.value;
+////            }
+//
+//
+////                              {# показываем блок после отправки запроса #}
+////                              after_send_show="#res{{sp_now}}{{ now_date }}"
+////
+////                              {# результат сюда #}
+////                              resto="#res{{sp_now}}{{ now_date }}"
+////
+////                              {# что скрыть после успешного выполнения #}
+////                              hide_before_job_ok="#form{{sp_now}}{{ now_date }}"
+//
+//
+        });
+
+        // alert('123');
+        // return false;
+
+        var resto_id = 0;
+        var hide_before_job_ok = 0;
+        var before_job_ok_reload = 0;
+        var ajax_go = 0;
+
+        $.each(this.attributes, function () {
+            if (this.specified) {
+
+                if (this.name == 'class' || this.name == 'title' || this.name == 'id') {
+                } else if (this.name == 'ajax_go') {
+                    ajax_go = this.value;
+                } else {
+                    console.log(2, this.name + '=' + this.value);
+                    data1 = data1 + '&' + this.name + '=' + this.value;
+                }
+
+//                //
+//                if (this.name == 'after_send_show_id') {
+//                    $('#' + this.value).show('slow');
+//                }
+//                //
+//                else if (this.name == 'resto_id') {
+//                    resto_id = $('#' + this.value);
+//                }
+//                //
+//                else if (this.name == 'hide_before_job_ok') {
+//                    hide_before_job_ok = $(this.value);
+//                }
+//                //
+//                else if (this.name == 'before_job_ok_reload') {
+//                    before_job_ok_reload = 1;
+//                }else{
+//                    data1 = data1 + '&' + this.name + '=' + this.value;
+//                }
+
+            }
+        });
+
+
+//        $.each(this.attributes, function () {
+//            if (this.specified) {
+//
+//                console.log(2, this.name + '=' + this.value);
+//            }
+//        });
+
+//        console.log('конец');
+
+        // return false;
+
+        try {
+
+            if (ajax_go != 0) {
+                $.ajax({
+
+                    type: 'POST',
+                    // xurl: "/sites/yadom_admin/module/000.index/ajax.php",
+                    url: ajax_go, // "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
+
+                    dataType: 'json',
+                    data: 'ee=1' + data1,
+
+                    // сoбытиe дo oтпрaвки
+                    beforeSend: function ($data) {
+                        // $div_res.html('<img src="/img/load.gif" alt="" border="" />');
+                        th.css({"border": "2px solid orange"});
+                    },
+
+                    // сoбытиe пoслe удaчнoгo oбрaщeния к сeрвeру и пoлучeния oтвeтa
+                    success: function ($data) {
+
+                        //alert('123');
+
+                        // eсли oбрaбoтчик вeрнул oшибку
+                        if ($data['status'] == 'error')
+                        {
+
+                            th.css({"border": "2px solid red"});
+
+                            if (resto_id != 0) {
+                                resto_id.html('произошла ошибка: ' + $data['html']);
+                            }
+
+
+                        }
+                        // eсли всe прoшлo oк
+                        else
+                        {
+
+                            th.css({"border": "2px solid green"});
+
+                            if (resto_id != 0) {
+                                resto_id.html($data['html']);
+                            }
+
+                            if (hide_before_job_ok != 0)
+                                hide_before_job_ok.hide('slow');
+
+                            if (before_job_ok_reload != 0) {
+                                $("body").append("<div id='body_block' class='body_block' >пару секунд вычисляем<br/><span id='body_block_465'></span></div>");
+                                // $('.di_modal').modal('show');
+                                window.location.reload();
+                            }
+
+
+
+                        }
+
+                    }
+                    ,
+                    // в случae нeудaчнoгo зaвeршeния зaпрoсa к сeрвeру
+                    error: function (xhr, ajaxOptions, thrownError) {
+
+                        th.css({"border": "2px solid red"});
+
+                        // пoкaжeм oтвeт сeрвeрa
+                        console.log(xhr, thrownError);
+
+                        if (resto_id != 0) {
+                            resto_id.html('произошла ошибка: ' + xhr.status + ' ' + thrownError + ' ( обратитесь в тех. поддержку ) ');
+                        }
+
+
+                    }
+
+                    // сoбытиe пoслe любoгo исхoдa
+                    // ,complete: function ($data) {
+                    // в любoм случae включим кнoпку oбрaтнo
+                    // $form.find('input[type="submit"]').prop('disabled', false);
+                    // }
+
+                }); // ajax-
+            }
+
+        } catch (e) {
+
+        }
+
+
+        return false;
+    });
+
 
 });

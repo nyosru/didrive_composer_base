@@ -6,6 +6,10 @@ try {
 
     $in = $_REQUEST;
 
+//    if( $in['in_pole_edit_name'] == 'oborot_hand' ){ 
+//        $in['new_val'] = round($in['new_val'],1);
+//    }
+    
     $in_sql = '';
     $in_sql_val = [];
 
