@@ -119,19 +119,19 @@ class Nyos_image {
 //            imagealphablending(self::$image, true);
             imagesavealpha(self::$image, true);
 
-            if (isset($save_to_file{3}))
+            if ( !empty($save_to_file) )
                 imagepng(self::$image, $save_to_file);
 
             imagepng(self::$image);
         } elseif (self::$mime == 'image/gif') {
 
-            if (isset($save_to_file{3}))
+            if ( !empty($save_to_file))
                 imagegif(self::$image, $save_to_file);
 
             imagegif(self::$image);
         } elseif (self::$mime == 'image/jpeg') {
 
-            if (isset($save_to_file{3}))
+            if (!empty($save_to_file))
                 imagejpeg(self::$image, $save_to_file);
 
             imagejpeg(self::$image);

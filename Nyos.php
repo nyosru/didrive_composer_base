@@ -88,7 +88,7 @@ class Nyos {
                     self::$folder_now = $f['folder'];
 
                 self::$folder_all[$domain] = $f['folder'];
-                return isset($f['folder']{1}) ? $f['folder'] : null;
+                return !empty($f['folder']) ? $f['folder'] : null;
             } else {
 
                 $ff = $db->prepare('INSERT INTO  `2domain` (domain) VALUES (?)');
@@ -139,7 +139,7 @@ class Nyos {
 
         $vv['domain'] = str_replace("www.", '', mb_strtolower($_SERVER['HTTP_HOST']));
 
-        if ($folder === null & isset($vv['folder']{1}))
+        if ($folder === null & !empty($vv['folder']))
             $folder = $vv['folder'];
 
         if (!defined('domain'))
@@ -151,10 +151,8 @@ class Nyos {
             $vv['dir_site'] = $site_dir = DS . 'sites' . DS . $folder . DS;
         }
 
-        if (!isset($site_dir{1}))
+        if ( empty($site_dir))
             throw new \Exception('Не найдена папка с сайтом');
-
-
 
         /**
          * корень сайта
