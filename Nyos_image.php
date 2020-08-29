@@ -119,7 +119,7 @@ class Nyos_image {
 //            imagealphablending(self::$image, true);
             imagesavealpha(self::$image, true);
 
-            if ( !empty($save_to_file) )
+            if ( !empty($save_to_file))
                 imagepng(self::$image, $save_to_file);
 
             imagepng(self::$image);
@@ -131,7 +131,7 @@ class Nyos_image {
             imagegif(self::$image);
         } elseif (self::$mime == 'image/jpeg') {
 
-            if (!empty($save_to_file))
+            if ( !empty($save_to_file))
                 imagejpeg(self::$image, $save_to_file);
 
             imagejpeg(self::$image);

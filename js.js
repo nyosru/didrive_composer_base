@@ -209,14 +209,6 @@ $(document).ready(function () {
 
     $(document).on('keyup input', '.didrive__items__new_edit', $.debounce(1000, didrive__items__new_edit));
 
-
-
-
-
-
-
-
-
     /**
      * jobdesc удаление оценки дня если есть параметры
      * var $delete_ocenka_day = $(this).attr('delete_ocenka_day');
@@ -1325,13 +1317,22 @@ $(document).ready(function () {
      */
     $('body').on('change', '.base__select__send_data_ajax', function (event) {
 
-        console.log('изменяем что то по выбору select');
+        console.log('изменяем что то по выбору select 2');
 
         event.preventDefault();
 
         var th = $(this);
+        // var th_option = $(this).find('option:selected');
         var $print_res_to = 0;
         var data1 = '';
+
+
+        var opt = $(this).find('option:selected');
+        
+        var t1s = opt.attr('s');
+        data1 = data1 + '&opt_s=' + t1s;
+        var t1v = opt.attr('value');
+        data1 = data1 + '&opt_value=' + t1v;
 
 //        // создание массива объектов из данных формы        
         var data12 = $(this).serializeArray();
@@ -1342,7 +1343,6 @@ $(document).ready(function () {
             console.log(1, this.name + '=' + this.value);
             data1 = data1 + '&' + this.name + '=' + this.value;
 
-//
 ////            if (this.name == 'print_res_to_id') {
 ////                $print_res_to = $('#' + this.value);
 ////            }
@@ -1352,7 +1352,6 @@ $(document).ready(function () {
 ////            if (this.name == 'data-target2') {
 ////                $modal_id = this.value;
 ////            }
-//
 //
 ////                              {# показываем блок после отправки запроса #}
 ////                              after_send_show="#res{{sp_now}}{{ now_date }}"
@@ -1377,7 +1376,8 @@ $(document).ready(function () {
         $.each(this.attributes, function () {
             if (this.specified) {
 
-                if (this.name == 'class' || this.name == 'title' || this.name == 'id') {
+                if (this.name == 'class' || this.name == 'style' || this.name == 'title' || this.name == 'id') {
+
                 } else if (this.name == 'ajax_go') {
                     ajax_go = this.value;
                 } else {
@@ -1510,6 +1510,5 @@ $(document).ready(function () {
 
         return false;
     });
-
 
 });
