@@ -4,12 +4,20 @@ try {
 
     require_once '0start.php';
 
+    if (!empty($_REQUEST['db_table'])) {
+        $table = htmlspecialchars($_REQUEST['db_table']);
+    } elseif (!empty($_REQUEST['in_module'])) {
+        $table = 'mod_' . \f\translit($_REQUEST['in_module'], 'uri2');
+    } else {
+        \f\end2('не определена таблица', false, $_REQUEST);
+    }
+
     $in = $_REQUEST;
 
 //    if( $in['in_pole_edit_name'] == 'oborot_hand' ){ 
 //        $in['new_val'] = round($in['new_val'],1);
 //    }
-    
+
     $in_sql = '';
     $in_sql_val = [];
 
@@ -20,7 +28,8 @@ try {
         }
     }
 
-    $sql = 'SELECT * FROM `mod_' . \f\translit($_REQUEST['in_module'], 'uri2') . '` WHERE `status` != \'delete\' ' . $in_sql . ' ;';
+
+    $sql = 'SELECT * FROM `' . $table . '` WHERE `status` != \'delete\' ' . $in_sql . ' ;';
     $ff = $db->prepare($sql);
     $ff->execute($in_sql_val);
 
@@ -33,7 +42,7 @@ try {
             ':in' => $in['new_val']
         ];
 
-        $sql = 'UPDATE `mod_' . \f\translit($_REQUEST['in_module'], 'uri2') . '` SET `' . $in['in_pole_edit_name'] . '` = :in WHERE `id` = :id ;';
+        $sql = 'UPDATE `' . $table . '` SET `' . $in['in_pole_edit_name'] . '` = :in WHERE `id` = :id ;';
         $ff = $db->prepare($sql);
         $ff->execute($in_sql_val);
 
@@ -50,7 +59,7 @@ try {
             }
         }
 
-        \f\db\db2_insert($db, 'mod_' . \f\translit($_REQUEST['in_module'], 'uri2'), $var_array, true);
+        \f\db\db2_insert($db, $table, $var_array, true);
 
         \f\end2('окей добавил');
     }

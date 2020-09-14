@@ -1,6 +1,15 @@
 
 $(document).ready(function () {
 
+    function getAttributes($node) {
+        var attrs = {};
+        $.each($node[0].attributes, function (index, attribute) {
+            attrs[attribute.name] = attribute.value;
+        });
+
+        return attrs;
+    }
+
 //    window.nyos = [];
 //    window.nyos.dolgn = ['123'];
 
@@ -285,30 +294,8 @@ $(document).ready(function () {
      */
     var didrive__edit_items_dop_pole = function (e) {
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         // alert(e);
-
         var $this = $(this);
-
-
-
-
-
-
         var $uri_query = '';
 
         $.each(this.attributes, function () {
@@ -1328,11 +1315,20 @@ $(document).ready(function () {
 
 
         var opt = $(this).find('option:selected');
-        
+
         var t1s = opt.attr('s');
         data1 = data1 + '&opt_s=' + t1s;
         var t1v = opt.attr('value');
         data1 = data1 + '&opt_value=' + t1v;
+
+
+        var opt_attr = getAttributes(opt);
+
+        // console.log(10, opt_attr);
+        $.each(opt_attr, function ( name, val ) {
+            console.log(11, name + '=' + val );
+            data1 = data1 + '&' + name + '=' + val;
+        });
 
 //        // создание массива объектов из данных формы        
         var data12 = $(this).serializeArray();
