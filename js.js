@@ -759,21 +759,8 @@ $(document).ready(function () {
 
     $(document).on('click', '.base__send_to_ajax', function (event) {
 
-        console.log('.base__send_to_ajax', '/nyos/base/js.js');
-
-//        return false;
-
-        //alert('2323');
-//        $(this).removeClass("show_job_tab");item_id
-//        $(this).addClass("show_job_tab2");
-//        var $uri_query = '';
-//        var $vars = [];
-        // var $vars = serialize(this.attributes);
-        // var $vars =  JSON.stringify(this.attributes);
-
         var res_to_id = 0;
 
-//        var $vars = new Array();
         var $uri_query = '';
         var hidethis = 0;
         var after_click_showid = 0;
@@ -788,37 +775,46 @@ $(document).ready(function () {
 
         var show_res = 0;
         var result_success_text = 0;
+        var hide_dropdown = 0;
 
         $.each(this.attributes, function () {
 
             if (this.specified) {
 
                 // пропускаем атрибуты
-                if (this.name == 'style' || this.name == 'class' || this.name == 'href') {
+                if (this.name == 'style'
+                        || this.name == 'class'
+                        || this.name == 'href') {
 
+                }
+                // закрываем меню
+                else if (this.name == 'hide_dropdown') {
+                    $().dropdown('toggle');
                 }
                 // обрабатываем атрибуты
                 else {
 
-                    // console.log(this.name, this.value);
-                    // $uri_query = $uri_query + '&' + this.name + '=' + this.value.replace(' ', '..')
-                    $uri_query = $uri_query + '&' + this.name + '=' + this.value;
-//
-                    if (1 == 2) {
+                    // console.log(11, this.name, this.value);
 
-                    }
-                    //
-                    else if (this.name == 'hidethis' && this.value == 'da') {
+                    $uri_query = $uri_query + '&' + this.name + '=' + this.value;
+
+                    if (this.name == 'hidethis' && this.value == 'da') {
                         hidethis = 1;
                     }
 
                     // куда шлём указываем в href
                     else if (this.name == 'href_to_ajax') {
                         href_to_ajax = this.value;
+                    } else if (this.name == '') {
+                        result_ok_click_to_id = this.value;
                     }
                     // 
-                    else if (this.name == 'return' && this.value == 'false') {
-                        return1 = false;
+                    else if (this.name == 'return') {
+                        if (this.value == 'false') {
+                            return1 = false;
+                        } else {
+                            return1 = true;
+                        }
                     }
                     //
                     else if (this.name == 'after_click_showid') {
@@ -895,6 +891,7 @@ $(document).ready(function () {
                     res_to_id.html('<img src="/img/load.gif" alt="... обработка ..." border="0" style="max-width:75px;" />');
                 }
 
+
                 if (after_click_showid != 0) {
                     after_click_showid.show('slow');
                 }
@@ -926,43 +923,17 @@ $(document).ready(function () {
                     }
 
                     if (msg_to_success != 0) {
-                        res_to_id.html('<b class="warn" >' + msg_to_success + '</b>');
+                        res_to_id.html('<div class="warn" >' + msg_to_success + '</div>');
                     } else {
                         // res_to_id.html('<b class="warn" >' + $j.html + '</b>');
-                        res_to_id.html('<b class="bg-success" style="padding:5px 10px;" >' + $j.html + '</b>');
+                        res_to_id.html('<div class="bg-success" style="padding:5px 10px;" >' + $j.html + '</div>');
                     }
-
-                    // $th("#main").prepend("<div id='box1'>1 блок</div>");                    
-                    // $th("#main").prepend("<div id='box1'>1 блок</div>");                    
-                    // $th("#main").prepend("<div id='box1'>1 блок</div>");                    
-                    // $th.html( $j.html + '<br/><A href="">Сделать ещё заявку</a>');
-                    // $($res_to_id).html( $j.html + '<br/><A href="">Сделать ещё заявку</a>');
-
-                    // return true;
-
-                    /*
-                     // alert($j.html);
-                     if (typeof $div_show !== 'undefined') {
-                     $('#' + $div_show).show();
-                     }
-                     */
-//                $('#form_ok').hide();
-//                $('#form_ok').html($j.html + '<br/><A href="">Сделать ещё заявку</a>');
-//                $('#form_ok').show('slow');
-//                $('#form_new').hide();
-//
-//                $('.list_mag').hide();
-//                $('.list_mag_ok').show('slow');
 
                 }
 // если ошибка
                 else {
 
-//                    if (res_error_show_id != 0) {
-//                        $(res_error_show_id).show('slow');
-//                    }
-
-                    res_to_id.html('<b class="bg-warning" style="padding:5px 10px;" >' + $j.html + '</b>');
+                    res_to_id.html('<div class="bg-warning" style="padding:5px 10px;" >' + $j.html + '</div>');
 
                 }
             }
@@ -1141,11 +1112,8 @@ $(document).ready(function () {
 
         // console.log('добавляем минус');
         event.preventDefault();
-
         var to_ajax = $(this).attr('ajax_go');
-
         var $print_res_to = 0;
-
         var data1 = '';
 
 //
@@ -1325,8 +1293,8 @@ $(document).ready(function () {
         var opt_attr = getAttributes(opt);
 
         // console.log(10, opt_attr);
-        $.each(opt_attr, function ( name, val ) {
-            console.log(11, name + '=' + val );
+        $.each(opt_attr, function (name, val) {
+            console.log(11, name + '=' + val);
             data1 = data1 + '&' + name + '=' + val;
         });
 
