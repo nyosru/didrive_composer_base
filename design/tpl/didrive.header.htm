@@ -88,7 +88,21 @@
                                 ajax_vars='return=end_small'
                                 >
                                 <i class="fa fa-table d-block"></i>
-                                <span>Список модулей</span>
+                                <span>Список модулей php</span>
+                            </button>
+
+                            <button 
+                                class="icon-menu-item text-center base_modal_go" 
+                                style="border: none; background-color: transparent; cursor: pointer;"
+
+                                data-toggle="modal" data-target="#di_modal"
+
+                                modal_header='список модулей'
+                                ajax_link='/vendor/didrive/base/micro-service/lists_module_site.php'
+                                ajax_vars='return=end_small'
+                                >
+                                <i class="fa fa-table d-block"></i>
+                                <span>Список модулей сайта</span>
                             </button>
 
                         {% endif %}
