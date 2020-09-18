@@ -201,18 +201,29 @@ class Nyos {
          * /didrive/
          * 2
          */
-        define('dir_didr', DS . 'didrive' . DS);
+        define('dir_didr', DS . 'vendor' 
+                . DS . 'didrive' 
+                . DS . 'base' 
+                . DS . 'design' . DS);
 
         /**
          * /didrive/module/
          * 2
          */
-        define('dir_didr_module', DS . 'didrive' . DS . 'module' . DS);
+        define('dir_didr_module', 
+                DS . 'vendor' 
+                . DS . 'didrive' 
+                . DS . 'base' 
+                . DS . 'design' 
+                . DS . 'module' . DS);
         /**
          * /didrive/tpl/
          * 2
          */
-        define('dir_didr_tpl', DS . 'didrive' . DS . 'tpl' . DS);
+        define('dir_didr_tpl', DS . 'vendor' 
+                . DS . 'didrive' 
+                . DS . 'base' 
+                . DS . 'design' . DS . 'tpl' . DS);
 
 // формируем \Nyos\Nyos::$menu         
         self::getMenu($folder);
