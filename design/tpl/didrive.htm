@@ -21,12 +21,11 @@
             <link rel="stylesheet" href="{{ sdd }}css/vendor/jquery.contextMenu.min.css" />
             <link rel="stylesheet" href="{{ sdd }}css/main.css" />
 
-            <link rel="stylesheet" href="/didrive/css.css" />
+            {#<link rel="stylesheet" href="/didrive/css.css" />#}
 
             {# <link rel="stylesheet" href="{{ sdd }}css/dore.light.blue.min.css" /> #}
             <link rel="stylesheet" href="{{ sdd }}css/dore.light.blue.css" />
-            <link rel="stylesheet" href="/template/preloader4/css.min.css">
-
+            <link rel="stylesheet" href="{{ sdd }}../../template/preloader4/css.min.css">
 
             {# авторизация вк для ядомика #}
             {# <script src="https://vk.com/js/api/openapi.js?167" type="text/javascript"></script> #}
@@ -76,11 +75,9 @@
 
         {% spaceless %}
 
-            {% include '/template/preloader4/up.htm' %}
-
-            {% include 'didrive/tpl/didrive.header.htm' %}
-
-            {% include 'didrive/tpl/didrive.sidebar.htm' %}
+            {% include sdd ~'../../template/preloader4/up.htm' %}
+            {% include sdd ~'../tpl/didrive.header.htm' %}
+            {% include sdd ~'../tpl/didrive.sidebar.htm' %}
 
             <main>
 
@@ -114,17 +111,17 @@
 
                 <script>
 // register modal component
-Vue.component("modal", {
-    template: "#modal-template"
-});
+                    Vue.component("modal", {
+                        template: "#modal-template"
+                    });
 
 // start app
-new Vue({
-    el: "#app",
-    data: {
-        showModal: false
-    }
-});
+                    new Vue({
+                        el: "#app",
+                        data: {
+                            showModal: false
+                        }
+                    });
                 </script>
 
                 <style>
@@ -708,26 +705,24 @@ new Vue({
 
             {{ body_end|raw }}
 
-            {% include '/template/preloader4/down.htm' %}
+            {% include sdd ~'../../template/preloader4/down.htm' %}
 
-            
             <script src="https://use.fontawesome.com/a173724525.js"></script>
             {#<script src="/vendor/fortawesome/font-awesome/js/all.min.js"></script>#}
             {#<script src="/vendor/fortawesome/font-awesome/js/all.min.js"></script>#}
             {#<script src="/vendor/fortawesome/font-awesome/js-packages/@fortawesome/fontawesome-free/js/all.min.js"></script>#}
             {#<style src="/vendor/fortawesome/font-awesome/js-packages/@fortawesome/fontawesome-free/css/fontawesome.min.css"></style>#}
             {#<style src="/vendor/fortawesome/font-awesome/css/font-awesome.min.css"></style>#}
-            
-            
-            <script type="text/javascript">
-$(document).ready(function () { // вся мaгия пoслe зaгрузки стрaницы
-    function show_block_div($id_in = 'body_block_4125') {
-        $("body").append("<div id='body_block' class='body_block' >пару секунд вычисляем<br/><span id='" + $id_in + "'></span></div>");
-    }
-});
 
+            <script type="text/javascript">
+                    $(document).ready(function () { // вся мaгия пoслe зaгрузки стрaницы
+                        function show_block_div($id_in = 'body_block_4125') {
+                            $("body").append("<div id='body_block' class='body_block' >пару секунд вычисляем<br/><span id='" + $id_in + "'></span></div>");
+                        }
+                    });
             </script>
 
         {% endspaceless %}
+        
     </body>
 </html>

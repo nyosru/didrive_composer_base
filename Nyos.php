@@ -204,7 +204,9 @@ class Nyos {
         define('dir_didr', DS . 'vendor' 
                 . DS . 'didrive' 
                 . DS . 'base' 
-                . DS . 'design' . DS);
+                . DS . 'design' 
+                . DS . 'design' 
+                . DS);
 
         /**
          * /didrive/module/
