@@ -26,6 +26,7 @@ try {
         $arr = parse_ini_file($d . $v . DS . 'cfg.ini', true);
         //\f\pa($arr);
         $return[$v] = $arr;
+        
     }
 
     $r = ob_get_contents();

@@ -133,16 +133,6 @@
 
                             {#{ pa( session.now_user_di) }#}
 
-                            {% if session.now_user_di.access is defined and session.now_user_di.access == 'admin' %}
-                                {#% if session.now_user_di.soc_web_id is defined and session.now_user_di.soc_web_id == 5903492 %#}
-
-                                <a href="#" class="icon-menu-item" onclick=" $('#nav1').hide();
-                                        return false;">
-                                    <i class="iconsmind-Equalizer d-block"></i>
-                                    <span>скрыть верх</span>
-                                </a>
-
-                            {% endif %}
 
                             {#
                             <a href="#" class="icon-menu-item">
@@ -184,6 +174,18 @@
                                 <span>Проверка Ajax запросов</span>
                             </a>
                         {% endif %}
+
+                        {% if session.now_user_di.access is defined and session.now_user_di.access == 'admin' %}
+                            {#% if session.now_user_di.soc_web_id is defined and session.now_user_di.soc_web_id == 5903492 %#}
+
+                            <a href="#" class="icon-menu-item" onclick=" $('#nav1').hide();
+                                        return false;">
+                                <i class="iconsmind-Equalizer d-block"></i>
+                                <span>скрыть верх</span>
+                            </a>
+
+                        {% endif %}
+
 
                     </div>
 
