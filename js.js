@@ -1105,7 +1105,7 @@ $(document).ready(function () {
                         res_to_id.html('<div class="warn" >' + msg_to_success + '</div>');
                     } else {
                         // res_to_id.html('<b class="warn" >' + $j.html + '</b>');
-                        res_to_id.html('<div class="bg-success" style="padding:5px 10px;" >' + $j.html + '</div>');
+                        res_to_id.html('<div style="background-color: rgba(200,255,200,0.4); padding:5px 10px;" >' + $j.html + '</div>');
                     }
 
                 }
