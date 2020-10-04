@@ -18,7 +18,6 @@ composer require didrive/base
     hidethis="da" 
     answer="удалить комментарий ?" 
 
-
     action="remove_item" 
     aj_id="' + ar['id'] + '" 
     aj_s="' + ar['s'] + '" 
@@ -26,5 +25,10 @@ composer require didrive/base
     res_to_id="com' + ar['id'] + '" 
     after_click_showid="com' + ar['id'] + '" 
     msg_to_success="Комментарий удалён" 
+
+    // эти строчки для второго запроса // будет отправлен если они есть
+    ajax2_link='/vendor/didrive_mod/items/3/micro-service/delete-items.php'
+    ajax2_vars='r_module=sp_ocenki_job_day&remove[sale_point]={{ sp_now }}&remove[date]={{ date }}'
+
     >aaaaaa</a>
 <div id="com' + ar['id'] + '" style="display:none;"></div>

@@ -789,7 +789,7 @@ $(document).ready(function () {
 
     $('body').on('click', '.base_modal_go', function (event) {
 
-        console.log('click .base_modal_go > открыть басе модаль');
+        // console.log('click .base_modal_go > открыть басе модаль');
 
         $th = $(this);
 
@@ -801,12 +801,16 @@ $(document).ready(function () {
 
 
 
+
 // спросить делаем не делаем
         $get_answer = false;
 
 // обновить страницу если загрузили аякс с норм ответом
         $reload_page_after_ok = false;
 
+
+        $link2 = 0;
+        $vars2 = 0;
 
 
         $.each(this.attributes, function () {
@@ -835,9 +839,13 @@ $(document).ready(function () {
 
                 if (this.name == 'reload_page_after_ok') {
                     $reload_page_after_ok = 'ok';
+                } else if (this.name == 'ajax2_link') {
+                    $link2 = this.value;
+                } else if (this.name == 'ajax2_vars') {
+                    $vars2 = this.value;
                 } else if (this.name == 'get_answer') {
                     $get_answer = this.value;
-                    console.log('ключ в атрибутах', this.name, this.value);
+                    // console.log('ключ в атрибутах', this.name, this.value);
                 }
 
             }
@@ -851,6 +859,20 @@ $(document).ready(function () {
         }
 
         // console.log($link, $vars);
+
+
+        if ($link2 != 0 && $vars2 != 0) {
+            $.ajax({
+                type: 'POST',
+                url: $link2,
+                dataType: 'json',
+                data: $vars2,
+                // сoбытиe пoслe удaчнoгo oбрaщeния к сeрвeру и пoлучeния oтвeтa
+                // success: function ($data) { }
+            }); // ajax-
+
+        }
+
 
         $.ajax({
 
