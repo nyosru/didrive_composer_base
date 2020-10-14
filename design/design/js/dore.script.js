@@ -13,7 +13,7 @@ Table of Contents
   03.06. App Menu
   03.07. Survey App
   03.08. Rotate Button
-  03.09. Charts
+  03.09. Chartsreplace
   03.10. Calendar
   03.11. Datatable
   03.12. Notification
@@ -607,7 +607,10 @@ $.dore = function(element, options) {
 
     function getActiveMainMenuLink() {
       var dataLink = $(".main-menu ul li.active a").attr("href");
-      return dataLink.replace("#", "");
+      // var dataLink2 = dataLink.replace("#", "");
+      // return dataLink.replace("#", "");
+      // return $(".main-menu ul li.active a").attr("href").replace("#", "");
+      return dataLink;
     }
 
     function isClassIncludedApp(className) {
@@ -625,6 +628,7 @@ $.dore = function(element, options) {
         return;
       }
 
+      var link = dataLink;
       var link = dataLink.replace("#", "");
       if ($(".sub-menu ul[data-link='" + link + "']").length == 0) {
         $("#app-container").removeClass("sub-show-temporary");

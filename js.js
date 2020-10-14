@@ -1,4 +1,3 @@
-
 $(document).ready(function () {
 
     function getAttributes($node) {
@@ -476,138 +475,35 @@ $(document).ready(function () {
         // alert(e);
         var $this = $(this);
         var $uri_query = '';
+        var $ajax_go = '/vendor/didrive/base/micro-service/edit_items_dop.php';
 
         $.each(this.attributes, function () {
-
             if (this.specified) {
 
                 // пропускаем атрибуты
                 if (this.name == 'style' || this.name == 'class' || this.name == 'href') {
 
                 }
+
+                //
+                else if (this.name == 'ajax_go') {
+                    $ajax_go = this.value;
+                }
+
                 // обрабатываем атрибуты
                 else {
-
-                    // console.log(this.name, this.value);
                     $uri_query = $uri_query + '&in_' + this.name + '=' + this.value;
-////
-//                    if (1 == 2) {
-//
-//                    }
-//                    //
-//                    else if (this.name == 'hidethis' && this.value == 'da') {
-//                        hidethis = 1;
-//                    }
-//
-//                    // куда шлём указываем в href
-//                    else if (this.name == 'href_to_ajax') {
-//                        href_to_ajax = this.value;
-//                    }
-//                    // 
-//                    else if (this.name == 'return' && this.value == 'false') {
-//                        return1 = false;
-//                    }
-//                    //
-//                    else if (this.name == 'after_click_showid') {
-//                        after_click_showid = $('#' + this.value);
-//                    }
-//                    // сообщение в случае удачи
-//                    else if (this.name == 'msg_to_success') {
-//                        msg_to_success = this.value;
-//                    }
-//                    //
-//                    else if (this.name == 'answer') {
-//                        answer = this.value;
-//                    }
-////                    else if (this.name == 'msg_to_success') {
-////                        msg_to_success = this.value;
-////                    } 
-//                    else if (this.name == 'res_to_id') {
-//                        res_to_id = $('#' + this.value);
-//                        //console.log($vars['resto']);
-//                        // alert($res_to);
-//                    } else if (this.name == 'result_success_text') {
-//                        result_success_text = this.value;
-//                        //console.log($vars['resto']);
-//                        // alert($res_to);
-//                    } else if (this.name == 'show_res') {
-//                        show_res = 'da';
-//                        //console.log($vars['resto']);
-//                        // alert($res_to);
-//                    }
-//
-//                if (this.name == 'show_on_click') {
-//                    $('#' + this.value).show('slow');
-//                }
-
                 }
             }
-
         });
 
-
-
-//        
-//        
-//        
-//        
-//        
-//        // var $this = e;
         var $val = $(this).val();
-//        // var $val = $this.val();
-//
-//
-//
-//        var $a_item_id = $(this).attr('edit_item_id');
-//        // var $a_item_id = $this.attr('edit_item_id');
-//        var $a_dop_name = $(this).attr('edit_dop_name');
-//        // var $a_dop_name = $this.attr('edit_dop_name');
-//        var $a_s = $(this).attr('edit_s');
-//        // var $a_s = $this.attr('edit_s');
-//
-//        var $a_pole_price_id = $('#' + $(this).attr('pole_price_id'));
-//        var $a_text_in_pole_price_id = $(this).attr('text_in_pole_price_id');
-//
-//        
-//
-//        /**
-//         * удаляем оценку если есть 2 переменные
-//         * @type jQuery
-//         */
-//        var $delete_ocenka_date = $(this).attr('delete_ocenka_date');
-//        var $delete_ocenka_sp = $(this).attr('delete_ocenka_sp');
-//        var $delete_ocenka_s = $(this).attr('delete_ocenka_s');
-//
-//
-//
-//
-//
-//
-//
-//        if ($delete_ocenka_date == null || $delete_ocenka_sp == null || $delete_ocenka_s == null) {
-//            console.log('не удаляем оценку дня');
-//        } else {
-//            console.log('удаляем оценку дня');
-//            didrive__jobdesc__delete_day_ocenka($delete_ocenka_sp, $delete_ocenka_date, $delete_ocenka_s);
-//        }
-
-//        if ($.fn.jobdesc_di__delete_day_ocenka2) {
-//            jobdesc_di__delete_day_ocenka2(1, 33);
-//            console.log('есть функция', 'jobdesc_di__delete_day_ocenka');
-//        } else {
-//            console.log('нет функции', 'jobdesc_di__delete_day_ocenka');
-//        }
 
         $.ajax({
 
             type: 'POST',
-            url: '/vendor/didrive/base/micro-service/edit_items_dop.php',
+            url: $ajax_go,
             dataType: 'json',
-//            data: "action=edit_items_dop&item_id=" + $a_item_id + "&dop_pole=" + $a_dop_name 
-//                    + "&val=" + $val 
-//                    + "&s=" + $a_s
-//                    + "&data_json=" + $dada
-//            ,
             data: "new_val=" + $val + "&" + $uri_query,
 
             // сoбытиe дo oтпрaвки
@@ -637,7 +533,7 @@ $(document).ready(function () {
                     /**
                      * если есть эти параметры то печатаем в блок нужный текст
                      */
-                    if ($a_pole_price_id == null || $a_text_in_pole_price_id == null) {
+                    if ( $a_pole_price_id == null || $a_text_in_pole_price_id == null) {
 
                     } else {
                         $a_pole_price_id.html($a_text_in_pole_price_id);
@@ -666,6 +562,7 @@ $(document).ready(function () {
     };
 
     $(document).on('keyup input', '.didrive__edit_items_dop_pole', $.debounce(1000, didrive__edit_items_dop_pole));
+
     $(document).on('keyup input', '.didrive__edit_items_dop_pole2', function () {
 
 
@@ -985,6 +882,7 @@ $(document).ready(function () {
                 // пропускаем атрибуты
                 if (this.name == 'style'
                         || this.name == 'class'
+                        || this.name == 'onclick'
                         || this.name == 'href') {
 
                 }
@@ -1164,7 +1062,7 @@ $(document).ready(function () {
         // console.log( data1 );
 
         $.each(data1, function () {
-            console.log(1, this.name + '=' + this.value);
+            // console.log(1, this.name + '=' + this.value);
 
 //            if (this.name == 'print_res_to_id') {
 //                $print_res_to = $('#' + this.value);
@@ -1193,13 +1091,16 @@ $(document).ready(function () {
         // return false;
 
         var resto_id = 0;
+        
         var hide_before_job_ok = 0;
+        var hide_id_before_job_ok = 0;
+        
         var before_job_ok_reload = 0;
 
         $.each(this.attributes, function () {
             if (this.specified) {
 
-                console.log(2, this.name + '=' + this.value);
+                // console.log(2, this.name + '=' + this.value);
 
                 //
                 if (this.name == 'after_send_show_id') {
@@ -1212,6 +1113,10 @@ $(document).ready(function () {
                 //
                 else if (this.name == 'hide_before_job_ok') {
                     hide_before_job_ok = $(this.value);
+                }
+                //
+                else if (this.name == 'hide_id_before_job_ok') {
+                    hide_id_before_job_ok = $('#' + this.value);
                 }
                 //
                 else if (this.name == 'before_job_ok_reload') {
@@ -1259,19 +1164,20 @@ $(document).ready(function () {
                     {
 
                         if (resto_id != 0) {
-                            resto_id.html($data['html']);
+                            resto_id.html('<span class="alert-success" >'+$data['html']+'</span>');
                         }
 
                         if (hide_before_job_ok != 0)
                             hide_before_job_ok.hide('slow');
+
+                        if (hide_id_before_job_ok != 0)
+                            hide_id_before_job_ok.hide('slow');
 
                         if (before_job_ok_reload != 0) {
                             $("body").append("<div id='body_block' class='body_block' >пару секунд вычисляем<br/><span id='body_block_465'></span></div>");
                             // $('.di_modal').modal('show');
                             window.location.reload();
                         }
-
-
 
                     }
 
@@ -1468,12 +1374,12 @@ $(document).ready(function () {
         return false;
     });
 
+// alert('123');
+
     /**
      * отправка данных после выбора select
      */
     $('body').on('change', '.base__select__send_data_ajax', function (event) {
-
-        console.log('изменяем что то по выбору select 2');
 
         event.preventDefault();
 
@@ -1495,7 +1401,7 @@ $(document).ready(function () {
 
         // console.log(10, opt_attr);
         $.each(opt_attr, function (name, val) {
-            console.log(11, name + '=' + val);
+            // console.log(11, name + '=' + val);
             data1 = data1 + '&' + name + '=' + val;
         });
 
@@ -1505,7 +1411,7 @@ $(document).ready(function () {
 
         $.each(data12, function () {
 
-            console.log(1, this.name + '=' + this.value);
+            // console.log(1, this.name + '=' + this.value);
             data1 = data1 + '&' + this.name + '=' + this.value;
 
 ////            if (this.name == 'print_res_to_id') {
@@ -1543,10 +1449,14 @@ $(document).ready(function () {
 
                 if (this.name == 'class' || this.name == 'style' || this.name == 'title' || this.name == 'id') {
 
-                } else if (this.name == 'ajax_go') {
+                }
+                //
+                else if (this.name == 'ajax_go') {
                     ajax_go = this.value;
-                } else {
-                    console.log(2, this.name + '=' + this.value);
+                }
+                //
+                else {
+                    // console.log(2, this.name + '=' + this.value);
                     data1 = data1 + '&' + this.name + '=' + this.value;
                 }
 
@@ -1638,12 +1548,10 @@ $(document).ready(function () {
                                 window.location.reload();
                             }
 
-
-
                         }
 
-                    }
-                    ,
+                    },
+
                     // в случae нeудaчнoгo зaвeршeния зaпрoсa к сeрвeру
                     error: function (xhr, ajaxOptions, thrownError) {
 
@@ -1668,10 +1576,11 @@ $(document).ready(function () {
                 }); // ajax-
             }
 
-        } catch (e) {
+        }
+        //
+        catch (e) {
 
         }
-
 
         return false;
     });

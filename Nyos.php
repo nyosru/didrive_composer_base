@@ -10,7 +10,6 @@ namespace Nyos;
 //}
 // echo '<Br/>'.__FILE__ .' ['.__LINE__.']';
 
-
 class Nyos {
 
 //    public static $logs = '';
@@ -434,7 +433,7 @@ class Nyos {
      * на выходе секрет
      */
     public static function creatSecret($text) {
-        return md5('wwdv' . $text . date('ymd', $_SERVER['REQUEST_TIME']));
+        return md5( filemtime(__FILE__).'wwdv' . $text . date('ymd', $_SERVER['REQUEST_TIME']));
     }
 
     /**
@@ -446,7 +445,7 @@ class Nyos {
      * @return boolean
      */
     public static function checkSecret(string $secret, string $text) {
-        if ($secret == md5('wwdv' . $text . date('ymd', $_SERVER['REQUEST_TIME']))) {
+        if ($secret == md5( filemtime(__FILE__).'wwdv' . $text . date('ymd', $_SERVER['REQUEST_TIME']))) {
             return true;
         } else {
             return false;
