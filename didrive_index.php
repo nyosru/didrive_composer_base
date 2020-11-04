@@ -118,21 +118,22 @@ try {
 
 
 
-
-
-
-
     $twig->addGlobal('session', $_SESSION);
     $twig->addGlobal('server', $_SERVER);
     $twig->addGlobal('post', $_POST);
     $twig->addGlobal('get', $_GET);
 
+    
+    
+
+
+    
 
     // если зашли
 
     try {
 
-        require_once 'i.didrive.enter.php';
+        require_once __DIR__.'/didrive_enter.php';
 
 //            if ($_SERVER['HTTP_HOST'] == 'adomik.uralweb.info') {
 //                // $sm = 0;
@@ -288,10 +289,10 @@ try {
 //\f\pa($vv['a_menu']);
 
 
-    $twig->addGlobal('session', $_SESSION);
-    $twig->addGlobal('server', $_SERVER);
-    $twig->addGlobal('post', $_POST);
-    $twig->addGlobal('get', $_GET);
+//    $twig->addGlobal('session', $_SESSION);
+//    $twig->addGlobal('server', $_SERVER);
+//    $twig->addGlobal('post', $_POST);
+//    $twig->addGlobal('get', $_GET);
 
 
 //            if ($_SERVER['HTTP_HOST'] == 'adomik.uralweb.info') {
