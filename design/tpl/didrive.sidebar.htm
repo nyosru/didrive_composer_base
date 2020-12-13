@@ -116,8 +116,18 @@
             <div class="scroll" >
                 <ul class="list-unstyled" data-link="modules">
 
-                    {% for k, v in a_menu %}
-                        <li {% if get.module == k %} class="active" {% endif %} >
+                    {% for k, v in a_menu if v.up is defined %}
+                        <li {% if get.level == k %} style="background-color:#ffffaa;" class="active" {% endif %} >
+                            <a href="?level={{ k }}">
+                                <b>
+                                    <i class="simple-icon-picture"></i> {{ v.name }} {# <span class="badge badge-pill badge-outline-primary float-right mr-4">NEW</span> #}
+                                </b>
+                            </a>
+                        </li>
+                    {% endfor %}
+
+                    {% for k, v in a_menu if v.up is not defined %}
+                        <li {% if get.level == k %} style="background-color:#ffffaa;" class="active" {% endif %} >
                             <a href="?level={{ k }}">
                                 <i class="simple-icon-picture"></i> {{ v.name }} {# <span class="badge badge-pill badge-outline-primary float-right mr-4">NEW</span> #}
                             </a>
