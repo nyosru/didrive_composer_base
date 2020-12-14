@@ -22,7 +22,6 @@ class Nyos {
 //    public static $connecttype = FALSE; // CURL / SOCKET / NONE / FALSE
     public static $folder_now = null;
     public static $folder_all = null;
-    
     public static $db_type = '';
 
     /**
@@ -120,12 +119,11 @@ class Nyos {
                 . '</pre>';
 
                 $msg = 'непонятная ошибка DB (выбираем папку по домену): ' . $ex->getMessage();
-                
-                \nyos\Msg\sendTelegramm( $msg , null, 2 );
-                
-                throw new \Exception( $msg );
+
+                \nyos\Msg\sendTelegramm($msg, null, 2);
+
+                throw new \Exception($msg);
                 // throw new \NyosEx('непонятная ошибка DB (выбираем папку по домену): ' . $ex->getMessage());
-                
             }
         }
     }
@@ -142,6 +140,15 @@ class Nyos {
         if (!defined('DS'))
             define('DS', DIRECTORY_SEPARATOR);
 
+        /**
+         * корень сайта
+         */
+        if (!defined('DR'))
+            define('DR', $_SERVER['DOCUMENT_ROOT']);
+        
+        $vv['DR'] = DR;
+        // \f\pa($vv['DR']);
+
         $vv['domain'] = str_replace("www.", '', mb_strtolower($_SERVER['HTTP_HOST']));
 
         if ($folder === null && !empty($vv['folder']))
@@ -151,17 +158,16 @@ class Nyos {
             define('domain', $vv['domain']);
 
         if ($folder === null && is_dir($_SERVER['DOCUMENT_ROOT'] . DS . 'site' . DS)) {
-            $vv['dir_site_file'] = 
-            $vv['dir_site'] = $site_dir = DS . 'site' . DS;
-        } 
+            $vv['dir_site_file'] = $vv['dir_site'] = $site_dir = DS . 'site' . DS;
+        }
         // если композер сайт, дата на базовом пути /site/ffff/*
-        elseif ( !empty($folder) && is_dir($_SERVER['DOCUMENT_ROOT'] . DS . 'vendor' . DS . 'didrive_site' . DS . $folder . DS )) {
+        elseif (!empty($folder) && is_dir($_SERVER['DOCUMENT_ROOT'] . DS . 'vendor' . DS . 'didrive_site' . DS . $folder . DS)) {
             $vv['site_type'] = 'composer';
-            $vv['dir_site'] = $site_dir = DS . 'vendor' . DS . 'didrive_site' . DS . $folder . DS ;
+            $vv['dir_site'] = $site_dir = DS . 'vendor' . DS . 'didrive_site' . DS . $folder . DS;
             $vv['dir_site_file'] = DS . 'sites' . DS . $folder . DS;
         }
         // если обычный сайт, дата на базовом пути /site/ffff/*
-        elseif (is_dir( DR . DS . 'sites' . DS . $folder . DS)) {
+        elseif (is_dir(DR . DS . 'sites' . DS . $folder . DS)) {
             $vv['dir_site_file'] = DS . 'sites' . DS . $folder . DS;
             $vv['dir_site'] = $site_dir = DS . 'sites' . DS . $folder . DS;
         }
@@ -171,18 +177,9 @@ class Nyos {
 
 //echo '<Br/>'.__FILE__.' #'.__LINE__.' '.$vv['folder'].'/'.$folder;
 //echo '<Br/>'.__FILE__.' #'.__LINE__.' '.$vv['dir_site'];
-
-        /**
-         * корень сайта
-         */
-        define('DR', $_SERVER['DOCUMENT_ROOT']);
-        $vv['DR'] = $_SERVER['DOCUMENT_ROOT'];
-        
-        // \f\pa($vv['DR']);
-
         // папка сайта
         define('site_type', $vv['site_type'] ?? null );
-        
+
         /**
          * /папка сайта/
          */
@@ -193,7 +190,7 @@ class Nyos {
          */
         define('dir_site_module', $site_dir . 'module' . DS);
         define('dir_site_module_local', $vv['dir_site_file'] . 'module' . DS);
-        
+
         /**
          * /папка сайта/download/
          * ( возможно композер сайта )
@@ -223,30 +220,30 @@ class Nyos {
          * /didrive/
          * 2
          */
-        define('dir_didr', DS . 'vendor' 
-                . DS . 'didrive' 
-                . DS . 'base' 
-                . DS . 'design' 
-                . DS . 'design' 
+        define('dir_didr', DS . 'vendor'
+                . DS . 'didrive'
+                . DS . 'base'
+                . DS . 'design'
+                . DS . 'design'
                 . DS);
 
         /**
          * /didrive/module/
          * 2
          */
-        define('dir_didr_module', 
-                DS . 'vendor' 
-                . DS . 'didrive' 
-                . DS . 'base' 
-                . DS . 'design' 
+        define('dir_didr_module',
+                DS . 'vendor'
+                . DS . 'didrive'
+                . DS . 'base'
+                . DS . 'design'
                 . DS . 'module' . DS);
         /**
          * /didrive/tpl/
          * 2
          */
-        define('dir_didr_tpl', DS . 'vendor' 
-                . DS . 'didrive' 
-                . DS . 'base' 
+        define('dir_didr_tpl', DS . 'vendor'
+                . DS . 'didrive'
+                . DS . 'base'
                 . DS . 'design' . DS . 'tpl' . DS);
 
 // формируем \Nyos\Nyos::$menu         
@@ -457,7 +454,7 @@ class Nyos {
      * на выходе секрет
      */
     public static function creatSecret($text) {
-        return md5( filemtime(__FILE__).'wwdv' . $text . date('ymd', $_SERVER['REQUEST_TIME']));
+        return md5(filemtime(__FILE__) . 'wwdv' . $text . date('ymd', $_SERVER['REQUEST_TIME']));
     }
 
     /**
@@ -469,7 +466,7 @@ class Nyos {
      * @return boolean
      */
     public static function checkSecret(string $secret, string $text) {
-        if ($secret == md5( filemtime(__FILE__).'wwdv' . $text . date('ymd', $_SERVER['REQUEST_TIME']))) {
+        if ($secret == md5(filemtime(__FILE__) . 'wwdv' . $text . date('ymd', $_SERVER['REQUEST_TIME']))) {
             return true;
         } else {
             return false;
