@@ -396,11 +396,6 @@ $(document).ready(function () {
 
     $(document).on('keyup input', '.didrive__items__new_edit3', $.debounce(1000, didrive__items__new_edit3));
 
-
-
-
-
-
     var didrive__edit_show_res = function (e) {
 
         var $this = $(this);
@@ -595,9 +590,6 @@ $(document).ready(function () {
     };
 
     $(document).on('keyup input', '.didrive__edit_show_res', $.debounce(1000, didrive__edit_show_res));
-
-
-
 
     /**
      * jobdesc удаление оценки дня если есть параметры
