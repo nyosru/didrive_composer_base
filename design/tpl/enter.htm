@@ -59,12 +59,14 @@
 
                                     <table><tr>
 
-                                            <td>
-                                                <a href="https://oauth.vk.com/authorize?client_id={{ id_app }}&redirect_uri={{ url_script }}&response_type=code" ><img src="/img/icon/vk04.png" style="max-width:40px;" /></a>
-                                                &nbsp;
-                                            </td>
+                                            {% if vk_app_id is defined %}
+                                                <td>
+                                                    <a href="https://oauth.vk.com/authorize?client_id={{ id_app }}&redirect_uri={{ url_script }}&response_type=code" ><img src="/img/icon/vk04.png" style="max-width:40px;" /></a>
+                                                    &nbsp;
+                                                </td>
+                                            {% endif %}
                                             <td>                                    
-                                                <div id="uLogin_didrive" data-ulogin="verify=1;display=panel;theme=classic;fields=first_name,last_name;providers=yandex,odnoklassniki,google,facebook;redirect_uri=%2F%2F{{ host }}%2Fi.didrive.php;mobilebuttons=0;"></div>
+                                                <div id="uLogin_didrive" data-ulogin="verify=1;display=panel;theme=classic;fields=first_name,last_name;providers={% if vk_app_id is not defined %}vkontakte,{% endif %}yandex,odnoklassniki,google,facebook;redirect_uri=%2F%2F{{ host }}%2Fi.didrive.php;mobilebuttons=0;"></div>
                                             </td>
                                         </tr>
                                     </table>
