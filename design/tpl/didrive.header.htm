@@ -270,9 +270,10 @@
 
                     <span class="name">
                         {% if session.now_user_di.name is defined and session.now_user_di.name is not empty %}
-                            {{ session.now_user_di.name }}
+                            {{ session.now_user_di.name }} <sup>#{{ session.now_user_di.id }}</sup>
                         {% endif %}
                     </span>
+                    {#{{ pa(session.now_user_di) }}#}
                     <span>
                         <img alt="Profile Picture" xsrc=""
 
