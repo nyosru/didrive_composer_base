@@ -104,6 +104,11 @@ try {
 
         // $smarty->template_dir = dir_serv_site_tpl;
 
+        if (file_exists( DR . '/vendor/didrive/base/' . 'js.js')) {
+            //$vv['in_body_end'][] = '<script type="text/javascript" src="' . $vv['sd'] . 'js.js"></script>';
+            $vv['in_body_end_js'][ '/vendor/didrive/base/js.js' ] = 1;
+        }
+        
         if (file_exists(DR . $vv['sd'] . 'css.css'))
             $vv['dihead'] .= '<link href="' . $vv['sd'] . 'css.css?' . filemtime(DR . $vv['sd'] . 'css.css') . '" rel="stylesheet" />';
 

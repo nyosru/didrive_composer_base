@@ -5,8 +5,17 @@ $(document).ready(function () {
         $.each($node[0].attributes, function (index, attribute) {
             attrs[attribute.name] = attribute.value;
         });
-
         return attrs;
+    }
+
+    function getAttributesInUri($node, $prefics = '') {
+
+        $s = ''
+        $node.each(function (index, el) {
+            $s = '&' + $prefics + '_' + el.name + '=' + el.value;
+        });
+        return $s;
+
     }
 
 //    window.nyos = [];
@@ -27,10 +36,8 @@ $(document).ready(function () {
         window.nyos = ['dodo'];
         window.nyos.dolgn = ['234234'];
         return [2, window.nyos.dolgn];
-
         // return ['dolgn'];
     };
-
     // didrive__creat_cash();
 
     /**
@@ -42,9 +49,7 @@ $(document).ready(function () {
     var didrive__items__new_edit = function (e) {
 
         var $this = $(this);
-
         var uri_query = '';
-
         $.each(this.attributes, function () {
 
             if (this.specified) {
@@ -60,7 +65,6 @@ $(document).ready(function () {
                 } else {
 
                     uri_query = uri_query + '&' + this.name + '=' + this.value;
-
                 }
 
 
@@ -94,15 +98,7 @@ $(document).ready(function () {
             }
 
         });
-
         uri_query = uri_query + '&value=' + $this.val();
-
-
-
-
-
-
-
 //        // alert(e);
 //
 //        var $this = $(this);
@@ -159,7 +155,6 @@ $(document).ready(function () {
             dataType: 'json',
             // data: "action=edit_items_dop&item_id=" + $a_item_id + "&dop_pole=" + $a_dop_name + "&val=" + $val + "&s=" + $a_s,
             data: "a=a&" + uri_query,
-
             // сoбытиe дo oтпрaвки
             beforeSend: function ($data) {
                 // $div_res.html('<img src="/img/load.gif" alt="" border="" />');
@@ -175,7 +170,6 @@ $(document).ready(function () {
                     // alert($data['error']); // пoкaжeм eё тeкст
                     //$div_res.html('<div class="warn warn">' + $data['html'] + '</div>');
                     $this.css({"border": "2px solid red"});
-
                 }
                 // eсли всe прoшлo oк
                 else
@@ -183,7 +177,6 @@ $(document).ready(function () {
 
                     // $div_res.html('<div class="warn good">' + $data['html'] + '</div>');
                     $this.css({"border": "2px solid green"});
-
                     /**
                      * если есть эти параметры то печатаем в блок нужный текст
                      */
@@ -212,20 +205,14 @@ $(document).ready(function () {
         }); // ajax-
 
         return false;
-
     };
-
     $(document).on('keyup input', '.didrive__items__new_edit', $.debounce(1000, didrive__items__new_edit));
-
     var didrive__items__new_edit3 = function (e) {
 
         var $this = $(this);
-
         var uri_query = '';
-
         var $a_pole_price_id = null;
         var $a_text_in_pole_price_id = null;
-
         $.each(this.attributes, function () {
 
             if (this.specified) {
@@ -241,7 +228,6 @@ $(document).ready(function () {
                 } else {
 
                     uri_query = uri_query + '&' + this.name + '=' + this.value;
-
                 }
 
 
@@ -275,15 +261,7 @@ $(document).ready(function () {
             }
 
         });
-
         uri_query = uri_query + '&value=' + $this.val();
-
-
-
-
-
-
-
 //        // alert(e);
 //
 //        var $this = $(this);
@@ -340,7 +318,6 @@ $(document).ready(function () {
             dataType: 'json',
             // data: "action=edit_items_dop&item_id=" + $a_item_id + "&dop_pole=" + $a_dop_name + "&val=" + $val + "&s=" + $a_s,
             data: "a=a&" + uri_query,
-
             // сoбытиe дo oтпрaвки
             beforeSend: function ($data) {
                 // $div_res.html('<img src="/img/load.gif" alt="" border="" />');
@@ -356,7 +333,6 @@ $(document).ready(function () {
                     // alert($data['error']); // пoкaжeм eё тeкст
                     //$div_res.html('<div class="warn warn">' + $data['html'] + '</div>');
                     $this.css({"border": "2px solid red"});
-
                 }
                 // eсли всe прoшлo oк
                 else
@@ -364,7 +340,6 @@ $(document).ready(function () {
 
                     // $div_res.html('<div class="warn good">' + $data['html'] + '</div>');
                     $this.css({"border": "2px solid green"});
-
                     /**
                      * если есть эти параметры то печатаем в блок нужный текст
                      */
@@ -391,45 +366,80 @@ $(document).ready(function () {
         }); // ajax-
 
         return false;
-
     };
-
     $(document).on('keyup input', '.didrive__items__new_edit3', $.debounce(1000, didrive__items__new_edit3));
-
     var didrive__edit_show_res = function (e) {
 
         var $this = $(this);
-
         var uri_query = '';
-
         var $a_pole_price_id = null;
         var $a_text_in_pole_price_id = null;
         var show_to_id = '';
         var uri_ajax = '';
 
+        var show_id_before_loading = '';
+        var hide_now_and_show_id_after_loading = '';
+
+
         $.each(this.attributes, function () {
 
             if (this.specified) {
 
-                if (this.name == 'href') {
+                var skip1 = false;
 
-                } else if (this.name == 'class') {
+                for (var i = 1; i <= 5; i++) {
 
-                } else if (this.name == 'style') {
+                    if (this.name == 'add_pole' + i + '_radio_name') {
+                        var ee = $('input[name="' + this.value + '"]:checked');
+                        // var string = getAttributesInUri(ee, this.value);
+                        var string = getAttributesInUri(ee);
+                        console.log(string);
+                        uri_query = uri_query + string;
+                        skip1 = true;
+                    }
 
-                } else if (this.name == 'value') {
+                }
 
-                } else if (this.name == 'show_to_id') {
+
+                if (skip1 == true) {
+
+                } else if (this.name == 'href') {
+
+                }
+                //
+                else if (this.name == 'class') {
+
+                }
+                //
+                else if (this.name == 'style') {
+
+                }
+                //
+                else if (this.name == 'value') {
+
+                }
+                //
+                else if (this.name == 'show_to_id') {
 
                     show_to_id = '#' + this.value;
-                } else if (this.name == 'uri_ajax') {
+                }
+                //
+                else if (this.name == 'show_id_before_loading') {
+                    show_id_before_loading = this.value;
+                }
+                //
+                else if (this.name == 'hide_now_and_show_id_after_loading') {
+                    hide_now_and_show_id_after_loading = this.value;
+                }
+                //
+                else if (this.name == 'uri_ajax') {
 
                     uri_ajax = this.value;
-
-                } else {
+                }
+                //
+                else {
 
                     uri_query = uri_query + '&' + this.name + '=' + this.value;
-
                 }
 
 
@@ -460,11 +470,11 @@ $(document).ready(function () {
 //                    console.log('ключ в атрибутах', this.name, this.value);
 //                }
 
+
+
             }
 
         });
-
-
         if (uri_ajax == '') {
             $this.css({"border": "2px solid red"});
             console.log('нет ссылки на скрипт');
@@ -472,13 +482,6 @@ $(document).ready(function () {
         }
 
         uri_query = uri_query + '&value=' + $this.val();
-
-
-
-
-
-
-
 //        // alert(e);
 //
 //        var $this = $(this);
@@ -518,6 +521,9 @@ $(document).ready(function () {
 //            console.log('нет функции', 'jobdesc_di__delete_day_ocenka');
 //        }
 
+
+
+
         $.ajax({
 
             type: 'POST',
@@ -526,14 +532,29 @@ $(document).ready(function () {
             dataType: 'json',
             // data: "action=edit_items_dop&item_id=" + $a_item_id + "&dop_pole=" + $a_dop_name + "&val=" + $val + "&s=" + $a_s,
             data: "a=a&" + uri_query,
-
             // сoбытиe дo oтпрaвки
             beforeSend: function ($data) {
                 // $div_res.html('<img src="/img/load.gif" alt="" border="" />');
                 $this.css({"border": "2px solid orange"});
+
+                if (show_id_before_loading != "") {
+                    $('#' + show_id_before_loading).show();
+                }
+                
+                if (hide_now_and_show_id_after_loading != "") {
+                    $('#' + hide_now_and_show_id_after_loading).hide();
+                }
+
+
             },
             // сoбытиe пoслe удaчнoгo oбрaщeния к сeрвeру и пoлучeния oтвeтa
             success: function ($data) {
+
+
+                if (show_id_before_loading != "") {
+                    $('#' + show_id_before_loading).hide('slow');
+                }
+
 
                 // eсли oбрaбoтчик вeрнул oшибку
                 if ($data['status'] == 'error')
@@ -542,7 +563,6 @@ $(document).ready(function () {
                     // alert($data['error']); // пoкaжeм eё тeкст
                     // $div_res.html('<div class="warn warn">' + $data['html'] + '</div>');
                     $this.css({"border": "2px solid red"});
-
                     if (show_to_id != '') {
                         $(show_to_id).html('<div class="alert alert-warning" style="padding:10px;" >произошла ошибка</div>' + $data['html']);
                     }
@@ -553,7 +573,6 @@ $(document).ready(function () {
                 {
 
                     $this.css({"border": "2px solid green"});
-                    
                     if (show_to_id != '') {
                         $(show_to_id).html($data['html']);
                     }
@@ -568,6 +587,12 @@ $(document).ready(function () {
 //                    }
 
                 }
+
+
+                if (hide_now_and_show_id_after_loading != "") {
+                    $('#' + hide_now_and_show_id_after_loading).show();
+                }
+
 
             }
             ,
@@ -586,11 +611,8 @@ $(document).ready(function () {
         }); // ajax-
 
         return false;
-
     };
-
     $(document).on('keyup input', '.didrive__edit_show_res', $.debounce(1000, didrive__edit_show_res));
-
     /**
      * jobdesc удаление оценки дня если есть параметры
      * var $delete_ocenka_day = $(this).attr('delete_ocenka_day');
@@ -609,7 +631,6 @@ $(document).ready(function () {
             url: '/vendor/didrive_mod/jobdesc/1/didrive/ajax.php',
             dataType: 'json',
             data: "action=delete_ocenka&sp=" + $sp + "&date=" + $date + "&s=" + $s,
-
             // сoбытиe дo oтпрaвки
             beforeSend: function ($data) {
                 // $div_res.html('<img src="/img/load.gif" alt="" border="" />');
@@ -671,7 +692,6 @@ $(document).ready(function () {
         var $this = $(this);
         var $uri_query = '';
         var $ajax_go = '/vendor/didrive/base/micro-service/edit_items_dop.php';
-
         $.each(this.attributes, function () {
             if (this.specified) {
 
@@ -691,16 +711,13 @@ $(document).ready(function () {
                 }
             }
         });
-
         var $val = $(this).val();
-
         $.ajax({
 
             type: 'POST',
             url: $ajax_go,
             dataType: 'json',
             data: "new_val=" + $val + "&" + $uri_query,
-
             // сoбытиe дo oтпрaвки
             beforeSend: function ($data) {
                 // $div_res.html('<img src="/img/load.gif" alt="" border="" />');
@@ -716,7 +733,6 @@ $(document).ready(function () {
                     // alert($data['error']); // пoкaжeм eё тeкст
                     //$div_res.html('<div class="warn warn">' + $data['html'] + '</div>');
                     $this.css({"border": "2px solid red"});
-
                 }
                 // eсли всe прoшлo oк
                 else
@@ -724,7 +740,6 @@ $(document).ready(function () {
 
                     // $div_res.html('<div class="warn good">' + $data['html'] + '</div>');
                     $this.css({"border": "2px solid green"});
-
                     /**
                      * если есть эти параметры то печатаем в блок нужный текст
                      */
@@ -753,11 +768,8 @@ $(document).ready(function () {
         }); // ajax-
 
         return false;
-
     };
-
     $(document).on('keyup input', '.didrive__edit_items_dop_pole', $.debounce(1000, didrive__edit_items_dop_pole));
-
     $(document).on('keyup input', '.didrive__edit_items_dop_pole2', function () {
 
 
@@ -777,7 +789,6 @@ $(document).ready(function () {
 
         var $a_pole_price_id = $('#' + $(this).attr('pole_price_id'));
         var $a_text_in_pole_price_id = $(this).attr('text_in_pole_price_id');
-
         /**
          * удаляем оценку если есть 2 переменные
          * @type jQuery
@@ -785,7 +796,6 @@ $(document).ready(function () {
         var $delete_ocenka_date = $(this).attr('delete_ocenka_date');
         var $delete_ocenka_sp = $(this).attr('delete_ocenka_sp');
         var $delete_ocenka_s = $(this).attr('delete_ocenka_s');
-
         if ($delete_ocenka_date == null || $delete_ocenka_sp == null || $delete_ocenka_s == null) {
             console.log('не удаляем оценку дня');
         } else {
@@ -806,7 +816,6 @@ $(document).ready(function () {
             url: '/vendor/didrive/base/ajax.php',
             dataType: 'json',
             data: "action=edit_items_dop&item_id=" + $a_item_id + "&dop_pole=" + $a_dop_name + "&val=" + $val + "&s=" + $a_s,
-
             // сoбытиe дo oтпрaвки
             beforeSend: function ($data) {
                 // $div_res.html('<img src="/img/load.gif" alt="" border="" />');
@@ -822,7 +831,6 @@ $(document).ready(function () {
                     // alert($data['error']); // пoкaжeм eё тeкст
                     //$div_res.html('<div class="warn warn">' + $data['html'] + '</div>');
                     $this.css({"border": "2px solid red"});
-
                 }
                 // eсли всe прoшлo oк
                 else
@@ -830,7 +838,6 @@ $(document).ready(function () {
 
                     // $div_res.html('<div class="warn good">' + $data['html'] + '</div>');
                     $this.css({"border": "2px solid green"});
-
                     /**
                      * если есть эти параметры то печатаем в блок нужный текст
                      */
@@ -859,9 +866,7 @@ $(document).ready(function () {
         }); // ajax-
 
         return false;
-
     });
-
     /* грузим базовый модаль и ставим нужные данные
      <a 
      href="#" 
@@ -884,10 +889,8 @@ $(document).ready(function () {
         // console.log('click .base_modal_go > открыть басе модаль');
 
         $th = $(this);
-
         $header = $th.attr('modal_header');
         $('#di_modal #di_modal_header').html($header);
-
         $link = $th.attr('ajax_link'); // - || +
         $vars = $th.attr('ajax_vars'); // - || +
 
@@ -896,15 +899,10 @@ $(document).ready(function () {
 
 // спросить делаем не делаем
         $get_answer = false;
-
 // обновить страницу если загрузили аякс с норм ответом
         $reload_page_after_ok = false;
-
-
         $link2 = 0;
         $vars2 = 0;
-
-
         $.each(this.attributes, function () {
 
             if (this.specified) {
@@ -943,7 +941,6 @@ $(document).ready(function () {
             }
 
         });
-
 // спрашиваем если нужно задать вопрос
         if ($get_answer != false) {
             if (!confirm($get_answer))
@@ -972,7 +969,6 @@ $(document).ready(function () {
             url: $link,
             dataType: 'json',
             data: $vars,
-
             // сoбытиe дo oтпрaвки
             beforeSend: function ($data) {
                 $('#di_modal .modal-body').html('<img src="/img/load.gif" alt="" border="" />');
@@ -986,7 +982,6 @@ $(document).ready(function () {
             success: function ($data) {
 
                 $('#di_modal .modal-body').html($data['html']);
-
 // если ошибка
                 if ($data['status'] == 'error') {
                     $('#body_block').remove();
@@ -1047,13 +1042,11 @@ $(document).ready(function () {
 
 
     });
-
 // alert('123123');
 
     $(document).on('click', '.base__send_to_ajax', function (event) {
 
         var res_to_id = 0;
-
         var $uri_query = '';
         var hidethis = 0;
         var after_click_showid = 0;
@@ -1065,11 +1058,9 @@ $(document).ready(function () {
         var msg_to_success = 0;
         var return1 = 0;
         var href_to_ajax = 0;
-
         var show_res = 0;
         var result_success_text = 0;
         var hide_dropdown = 0;
-
         $.each(this.attributes, function () {
 
             if (this.specified) {
@@ -1091,7 +1082,6 @@ $(document).ready(function () {
                     // console.log(11, this.name, this.value);
 
                     $uri_query = $uri_query + '&' + this.name + '=' + this.value;
-
                     if (this.name == 'hidethis' && this.value == 'da') {
                         hidethis = 1;
                     }
@@ -1147,8 +1137,6 @@ $(document).ready(function () {
             }
 
         });
-
-
 //        alert($uri_query);
 //        return false;
 
@@ -1170,7 +1158,6 @@ $(document).ready(function () {
         // console.log($uri_query);
         //$(this).html("тут список");
         var $th = $(this);
-
         $.ajax({
 
             url: href_to_ajax,
@@ -1178,7 +1165,6 @@ $(document).ready(function () {
             cache: false,
             dataType: "json",
             type: "post",
-
             beforeSend: function () {
 
                 if (res_to_id != 0) {
@@ -1201,7 +1187,6 @@ $(document).ready(function () {
 
             }
             ,
-
             success: function ($j) {
 
                 //alert(resto);
@@ -1228,30 +1213,30 @@ $(document).ready(function () {
                 else {
 
                     res_to_id.html('<div class="bg-warning" style="padding:5px 10px;" >' + $j.html + '</div>');
-
                 }
             }
 
         });
-
         if (return1 == false)
             return false;
-
     });
-
-
     /**
      * субмит формы на указанный в форме адрес
      */
     $('body').on('submit', '.base__send_form_ajax', function (event) {
 
-        // console.log('добавляем минус');
+        console.log('base__send_form_ajax submit');
         event.preventDefault();
+
+//var attr = $(this).attr('name');
+//if (typeof attr !== typeof undefined && attr !== false) {
+//// ...
+//} 
 
         var to_ajax = $(this).attr('action');
 
-        var $print_res_to = 0;
 
+        var $print_res_to = 0;
         // создание массива объектов из данных формы        
         var data1 = $(this).serializeArray();
         // console.log( data1 );
@@ -1281,17 +1266,13 @@ $(document).ready(function () {
 
 
         });
-
         // alert('123');
         // return false;
 
         var resto_id = 0;
-
         var hide_before_job_ok = 0;
         var hide_id_before_job_ok = 0;
-
         var before_job_ok_reload = 0;
-
         $.each(this.attributes, function () {
             if (this.specified) {
 
@@ -1299,6 +1280,10 @@ $(document).ready(function () {
 
                 //
                 if (this.name == 'after_send_show_id') {
+                    $('#' + this.value).show('slow');
+                }
+                //
+                else if (this.name == 'after_send_show_id2') {
                     $('#' + this.value).show('slow');
                 }
                 //
@@ -1321,8 +1306,6 @@ $(document).ready(function () {
             }
 
         });
-
-
         try {
 
             $.ajax({
@@ -1333,13 +1316,11 @@ $(document).ready(function () {
 
                 dataType: 'json',
                 data: data1,
-
                 // сoбытиe дo oтпрaвки
                 beforeSend: function ($data) {
                     // $div_res.html('<img src="/img/load.gif" alt="" border="" />');
                     // $this.css({"border": "2px solid orange"});
                 },
-
                 // сoбытиe пoслe удaчнoгo oбрaщeния к сeрвeру и пoлучeния oтвeтa
                 success: function ($data) {
 
@@ -1364,10 +1345,8 @@ $(document).ready(function () {
 
                         if (hide_before_job_ok != 0)
                             hide_before_job_ok.hide('slow');
-
                         if (hide_id_before_job_ok != 0)
                             hide_id_before_job_ok.hide('slow');
-
                         if (before_job_ok_reload != 0) {
                             $("body").append("<div id='body_block' class='body_block' >пару секунд вычисляем<br/><span id='body_block_465'></span></div>");
                             // $('.di_modal').modal('show');
@@ -1383,7 +1362,6 @@ $(document).ready(function () {
 
                     // пoкaжeм oтвeт сeрвeрa
                     console.log(xhr, thrownError);
-
                     if (resto_id != 0) {
                         resto_id.html('произошла ошибка: ' + xhr.status + ' ' + thrownError + ' ( обратитесь в тех. поддержку ) ');
                     }
@@ -1406,7 +1384,6 @@ $(document).ready(function () {
 
         return false;
     });
-
     /**
      * отправка данных по клику на чем нить
      */
@@ -1417,7 +1394,6 @@ $(document).ready(function () {
         var to_ajax = $(this).attr('ajax_go');
         var $print_res_to = 0;
         var data1 = '';
-
 //
 //        // создание массива объектов из данных формы        
 //        var data1 = $(this).serializeArray();
@@ -1456,12 +1432,10 @@ $(document).ready(function () {
         var resto_id = 0;
         var hide_before_job_ok = 0;
         var before_job_ok_reload = 0;
-
         $.each(this.attributes, function () {
             if (this.specified) {
 
                 console.log(2, this.name + '=' + this.value);
-
                 //
                 if (this.name == 'after_send_show_id') {
                     $('#' + this.value).show('slow');
@@ -1484,8 +1458,6 @@ $(document).ready(function () {
             }
 
         });
-
-
         try {
 
             $.ajax({
@@ -1496,13 +1468,11 @@ $(document).ready(function () {
 
                 dataType: 'json',
                 data: 'ee=1' + data1,
-
                 // сoбытиe дo oтпрaвки
                 beforeSend: function ($data) {
                     // $div_res.html('<img src="/img/load.gif" alt="" border="" />');
                     // $this.css({"border": "2px solid orange"});
                 },
-
                 // сoбытиe пoслe удaчнoгo oбрaщeния к сeрвeру и пoлучeния oтвeтa
                 success: function ($data) {
 
@@ -1527,7 +1497,6 @@ $(document).ready(function () {
 
                         if (hide_before_job_ok != 0)
                             hide_before_job_ok.hide('slow');
-
                         if (before_job_ok_reload != 0) {
                             $("body").append("<div id='body_block' class='body_block' >пару секунд вычисляем<br/><span id='body_block_465'></span></div>");
                             // $('.di_modal').modal('show');
@@ -1545,7 +1514,6 @@ $(document).ready(function () {
 
                     // пoкaжeм oтвeт сeрвeрa
                     console.log(xhr, thrownError);
-
                     if (resto_id != 0) {
                         resto_id.html('произошла ошибка: ' + xhr.status + ' ' + thrownError + ' ( обратитесь в тех. поддержку ) ');
                     }
@@ -1568,7 +1536,6 @@ $(document).ready(function () {
 
         return false;
     });
-
 // alert('123');
 
     /**
@@ -1577,29 +1544,21 @@ $(document).ready(function () {
     $('body').on('change', '.base__select__send_data_ajax', function (event) {
 
         event.preventDefault();
-
         var th = $(this);
         // var th_option = $(this).find('option:selected');
         var $print_res_to = 0;
         var data1 = '';
-
-
         var opt = $(this).find('option:selected');
-
         var t1s = opt.attr('s');
         data1 = data1 + '&opt_s=' + t1s;
         var t1v = opt.attr('value');
         data1 = data1 + '&opt_value=' + t1v;
-
-
         var opt_attr = getAttributes(opt);
-
         // console.log(10, opt_attr);
         $.each(opt_attr, function (name, val) {
             // console.log(11, name + '=' + val);
             data1 = data1 + '&' + name + '=' + val;
         });
-
 //        // создание массива объектов из данных формы        
         var data12 = $(this).serializeArray();
 //        // console.log( data1 );
@@ -1608,7 +1567,6 @@ $(document).ready(function () {
 
             // console.log(1, this.name + '=' + this.value);
             data1 = data1 + '&' + this.name + '=' + this.value;
-
 ////            if (this.name == 'print_res_to_id') {
 ////                $print_res_to = $('#' + this.value);
 ////            }
@@ -1630,7 +1588,6 @@ $(document).ready(function () {
 //
 //
         });
-
         // alert('123');
         // return false;
 
@@ -1638,7 +1595,6 @@ $(document).ready(function () {
         var hide_before_job_ok = 0;
         var before_job_ok_reload = 0;
         var ajax_go = 0;
-
         $.each(this.attributes, function () {
             if (this.specified) {
 
@@ -1676,8 +1632,6 @@ $(document).ready(function () {
 
             }
         });
-
-
 //        $.each(this.attributes, function () {
 //            if (this.specified) {
 //
@@ -1700,13 +1654,11 @@ $(document).ready(function () {
 
                     dataType: 'json',
                     data: 'ee=1' + data1,
-
                     // сoбытиe дo oтпрaвки
                     beforeSend: function ($data) {
                         // $div_res.html('<img src="/img/load.gif" alt="" border="" />');
                         th.css({"border": "2px solid orange"});
                     },
-
                     // сoбытиe пoслe удaчнoгo oбрaщeния к сeрвeру и пoлучeния oтвeтa
                     success: function ($data) {
 
@@ -1717,7 +1669,6 @@ $(document).ready(function () {
                         {
 
                             th.css({"border": "2px solid red"});
-
                             if (resto_id != 0) {
                                 resto_id.html('произошла ошибка: ' + $data['html']);
                             }
@@ -1729,14 +1680,12 @@ $(document).ready(function () {
                         {
 
                             th.css({"border": "2px solid green"});
-
                             if (resto_id != 0) {
                                 resto_id.html($data['html']);
                             }
 
                             if (hide_before_job_ok != 0)
                                 hide_before_job_ok.hide('slow');
-
                             if (before_job_ok_reload != 0) {
                                 $("body").append("<div id='body_block' class='body_block' >пару секунд вычисляем<br/><span id='body_block_465'></span></div>");
                                 // $('.di_modal').modal('show');
@@ -1746,15 +1695,12 @@ $(document).ready(function () {
                         }
 
                     },
-
                     // в случae нeудaчнoгo зaвeршeния зaпрoсa к сeрвeру
                     error: function (xhr, ajaxOptions, thrownError) {
 
                         th.css({"border": "2px solid red"});
-
                         // пoкaжeм oтвeт сeрвeрa
                         console.log(xhr, thrownError);
-
                         if (resto_id != 0) {
                             resto_id.html('произошла ошибка: ' + xhr.status + ' ' + thrownError + ' ( обратитесь в тех. поддержку ) ');
                         }
@@ -1779,5 +1725,4 @@ $(document).ready(function () {
 
         return false;
     });
-
 });
