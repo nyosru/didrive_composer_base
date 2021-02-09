@@ -23,10 +23,11 @@ try {
         if ($v == '.' || $v == '..')
             continue;
 
-        $arr = parse_ini_file($d . $v . DS . 'cfg.ini', true);
-        //\f\pa($arr);
-        $return[$v] = $arr;
-        
+        if (file_exists($d . $v . DS . 'cfg.ini')) {
+            $arr = parse_ini_file($d . $v . DS . 'cfg.ini', true);
+            //\f\pa($arr);
+            $return[$v] = $arr;
+        }
     }
 
     $r = ob_get_contents();

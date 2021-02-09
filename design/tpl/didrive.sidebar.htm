@@ -17,8 +17,11 @@
 
                     {#{ pa(a_menu) }#}
                     
-                    {% for k, v in a_menu %}
+                    {% for k, v in a_menu if k != 'di' %}
 
+                        {#{{ pa(k) }}#}
+                        {#{{ pa(v) }}#}
+                        
                         {% if v['module_start'] is defined and v['module_start'] == 'da' %}
                             {% set module_start_est = true %}
                         {% endif %}
@@ -116,7 +119,7 @@
             <div class="scroll" >
                 <ul class="list-unstyled" data-link="modules">
 
-                    {% for k, v in a_menu if v.up is defined %}
+                    {% for k, v in a_menu if v.up is defined  and k != 'di'  %}
                         <li {% if get.level == k %} style="background-color:#ffffaa;" class="active" {% endif %} >
                             <a href="?level={{ k }}">
                                 <b>
@@ -126,7 +129,7 @@
                         </li>
                     {% endfor %}
 
-                    {% for k, v in a_menu if v.up is not defined %}
+                    {% for k, v in a_menu if v.up is not defined and k != 'di'  %}
                         <li {% if get.level == k %} style="background-color:#ffffaa;" class="active" {% endif %} >
                             <a href="?level={{ k }}">
                                 <i class="simple-icon-picture"></i> {{ v.name }} {# <span class="badge badge-pill badge-outline-primary float-right mr-4">NEW</span> #}
@@ -157,6 +160,7 @@
                         </li>
                     {% endif %}
                 </ul>
+                
                 <ul class="list-unstyled" data-link="menu">
                     {% if 1 == 2 %}
                         <li>
