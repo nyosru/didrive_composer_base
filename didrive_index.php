@@ -61,7 +61,8 @@ try {
 
 // \f\timer_start(78);
 
-    require_once($_SERVER['DOCUMENT_ROOT'] . '/all/0.start.php');
+    // require_once($_SERVER['DOCUMENT_ROOT'] . '/all/0.start.php');
+    require_once( __DIR__ . '/all/0.start.php');
 
 // \f\pa(\f\timer_stop(78));
 
@@ -283,7 +284,7 @@ try {
 
 
 
-    require DR . '/all/twig.function.php';
+    require __DIR__ . '/all/twig.function.php';
 
     $vv['a_menu'] = \Nyos\Nyos::$a_menu;
 //\f\pa($vv['a_menu']);

@@ -64,9 +64,17 @@ try {
         //        die('<br/>' . __FILE__ . ' ' . __LINE__);
         //    }
 
-        $vv['session'] = $_SESSION;
+
+        // $vv['cookie'] = $_COOKIE;
+        // $vv['session'] = $_SESSION;
         $vv['db'] = $db;
 
+//        if(!isset($_COOKIE["token"])){
+//  $token = md5(uniqid());	
+//  setcookie("token", $token, time()+60*60*24*30);
+//}else{
+//  print_r($_COOKIE["token"]);
+//}
         // \f\pa($_SESSION);
         // require_once $_SERVER['DOCUMENT_ROOT'] . '/all/sql.start.php';
         //\f\pa($vv['folder']);
@@ -96,6 +104,10 @@ try {
 
         $vv['dir_site_tpl'] = dir_site_tpl;
 
+        $twig->addGlobal('session', $_SESSION);
+        $twig->addGlobal('server', $_SERVER);
+        
+        
         if (file_exists(DR . dir_site . 'index.php'))
             require_once( DR . dir_site . 'index.php');
 
@@ -104,11 +116,11 @@ try {
 
         // $smarty->template_dir = dir_serv_site_tpl;
 
-        if (file_exists( DR . '/vendor/didrive/base/' . 'js.js')) {
+        if (file_exists(DR . '/vendor/didrive/base/' . 'js.js')) {
             //$vv['in_body_end'][] = '<script type="text/javascript" src="' . $vv['sd'] . 'js.js"></script>';
-            $vv['in_body_end_js'][ '/vendor/didrive/base/js.js' ] = 1;
+            $vv['in_body_end_js']['/vendor/didrive/base/js.js'] = 1;
         }
-        
+
         if (file_exists(DR . $vv['sd'] . 'css.css'))
             $vv['dihead'] .= '<link href="' . $vv['sd'] . 'css.css?' . filemtime(DR . $vv['sd'] . 'css.css') . '" rel="stylesheet" />';
 
@@ -811,7 +823,7 @@ try {
         $twig->addGlobal('post', $_POST);
         $twig->addGlobal('get', $_GET);
 
-        require DR . '/all/twig.function.php';
+        require __DIR__ . '/all/twig.function.php';
 
         if (file_exists(DR . '/vendor/didrive/f/twig.function.php')) {
             require_once DR . '/vendor/didrive/f/twig.function.php';

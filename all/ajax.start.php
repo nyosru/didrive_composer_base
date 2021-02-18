@@ -9,4 +9,5 @@ if (isset(\Nyos\Nyos::$folder_now{2}))
 
 \Nyos\Nyos::defineVars();
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/all/sql.start.php';
+
+require_once __DIR__ . '/sql.start.php';
