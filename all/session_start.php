@@ -7,6 +7,7 @@ session_set_cookie_params(86400);
 ini_set("session.gc_maxlifetime", 86400);
 
 
+/*
 //if (1 == 2 && $_SERVER['HTTP_HOST'] == 'invest.uralweb.info' || $_SERVER['HTTP_HOST'] == 'limon-invest.ru') {
 //    $sp = $_SERVER['DOCUMENT_ROOT'] . '/0.cash/sessions-limon';
 //} else {
@@ -20,7 +21,7 @@ if (!is_dir($sp))
     mkdir($sp, 0755);
 
 ini_set('session.save_path', $sp);
-
+*/
 
 
 session_start();
