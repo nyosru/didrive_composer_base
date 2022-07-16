@@ -2,13 +2,13 @@
 
 namespace Nyos;
 
-if (!defined('IN_NYOS_PROJECT'))
-    die('<center><br><br><br><br><p>Сработала защита <b>c.NYOS</b> от злостных розовых хакеров.</p>
-    <a href="http://www.uralweb.info" target="_blank">Создание, дизайн, вёрстка и программирование сайтов.</a><br />
-    <a href="http://www.nyos.ru" target="_blank">Только отдельные услуги: Дизайн, вёрстка и программирование сайтов.</a>');
-
+//if (!defined('IN_NYOS_PROJECT'))
+//    die('<center><br><br><br><br><p>Сработала защита <b>c.NYOS</b> от злостных розовых хакеров.</p>
+//    <a href="http://www.uralweb.info" target="_blank">Создание, дизайн, вёрстка и программирование сайтов.</a><br />
+//    <a href="http://www.nyos.ru" target="_blank">Только отдельные услуги: Дизайн, вёрстка и программирование сайтов.</a>'
+//        .'nyos.php');
+//}
 // echo '<Br/>'.__FILE__ .' ['.__LINE__.']';
-
 
 class Nyos {
 
@@ -22,6 +22,7 @@ class Nyos {
 //    public static $connecttype = FALSE; // CURL / SOCKET / NONE / FALSE
     public static $folder_now = null;
     public static $folder_all = null;
+    public static $db_type = '';
 
     /**
      * строка путь до файла кеша меню
@@ -86,7 +87,7 @@ class Nyos {
                     self::$folder_now = $f['folder'];
 
                 self::$folder_all[$domain] = $f['folder'];
-                return isset($f['folder']{1}) ? $f['folder'] : null;
+                return !empty($f['folder']) ? $f['folder'] : null;
             } else {
 
                 $ff = $db->prepare('INSERT INTO  `2domain` (domain) VALUES (?)');
@@ -96,12 +97,6 @@ class Nyos {
         }
         //
         catch (\PDOException $ex) {
-
-            echo '<pre>--- ' . __FILE__ . ' ' . __LINE__ . '-------'
-            . PHP_EOL . $ex->getMessage() . ' #' . $ex->getCode()
-            . PHP_EOL . $ex->getFile() . ' #' . $ex->getLine()
-            . PHP_EOL . $ex->getTraceAsString()
-            . '</pre>';
 
 // не найдена таблица, создаём значит её
             if (strpos($ex->getMessage(), 'no such table')) {
@@ -117,7 +112,17 @@ class Nyos {
                 unset($ff);
             } else {
 
-                throw new \Exception('непонятная ошибка DB (выбираем папку по домену): ' . $ex->getMessage());
+                echo '<pre>--- ' . __FILE__ . ' ' . __LINE__ . '-------'
+                . PHP_EOL . $ex->getMessage() . ' #' . $ex->getCode()
+                . PHP_EOL . $ex->getFile() . ' #' . $ex->getLine()
+                . PHP_EOL . $ex->getTraceAsString()
+                . '</pre>';
+
+                $msg = 'непонятная ошибка DB (выбираем папку по домену): ' . $ex->getMessage();
+
+                \nyos\Msg\sendTelegramm($msg, null, 2);
+
+                throw new \Exception($msg);
                 // throw new \NyosEx('непонятная ошибка DB (выбираем папку по домену): ' . $ex->getMessage());
             }
         }
@@ -135,30 +140,45 @@ class Nyos {
         if (!defined('DS'))
             define('DS', DIRECTORY_SEPARATOR);
 
+        /**
+         * корень сайта
+         */
+        if (!defined('DR'))
+            define('DR', $_SERVER['DOCUMENT_ROOT']);
+        
+        $vv['DR'] = DR;
+        // \f\pa($vv['DR']);
+
         $vv['domain'] = str_replace("www.", '', mb_strtolower($_SERVER['HTTP_HOST']));
 
-        if ($folder === null & isset($vv['folder']{1}))
+        if ($folder === null && !empty($vv['folder']))
             $folder = $vv['folder'];
 
         if (!defined('domain'))
             define('domain', $vv['domain']);
 
         if ($folder === null && is_dir($_SERVER['DOCUMENT_ROOT'] . DS . 'site' . DS)) {
-            $vv['dir_site'] = $site_dir = DS . 'site' . DS;
-        } elseif (is_dir($_SERVER['DOCUMENT_ROOT'] . DS . 'sites' . DS . $folder . DS)) {
+            $vv['dir_site_file'] = $vv['dir_site'] = $site_dir = DS . 'site' . DS;
+        }
+        // если композер сайт, дата на базовом пути /site/ffff/*
+        elseif (!empty($folder) && is_dir($_SERVER['DOCUMENT_ROOT'] . DS . 'vendor' . DS . 'didrive_site' . DS . $folder . DS)) {
+            $vv['site_type'] = 'composer';
+            $vv['dir_site'] = $site_dir = DS . 'vendor' . DS . 'didrive_site' . DS . $folder . DS;
+            $vv['dir_site_file'] = DS . 'sites' . DS . $folder . DS;
+        }
+        // если обычный сайт, дата на базовом пути /site/ffff/*
+        elseif (is_dir(DR . DS . 'sites' . DS . $folder . DS)) {
+            $vv['dir_site_file'] = DS . 'sites' . DS . $folder . DS;
             $vv['dir_site'] = $site_dir = DS . 'sites' . DS . $folder . DS;
         }
 
-        if (!isset($site_dir{1}))
+        if (empty($site_dir))
             throw new \Exception('Не найдена папка с сайтом');
 
-
-
-        /**
-         * корень сайта
-         */
-        define('DR', $_SERVER['DOCUMENT_ROOT']);
-        $vv['DR'] = $_SERVER['DOCUMENT_ROOT'];
+//echo '<Br/>'.__FILE__.' #'.__LINE__.' '.$vv['folder'].'/'.$folder;
+//echo '<Br/>'.__FILE__.' #'.__LINE__.' '.$vv['dir_site'];
+        // папка сайта
+        define('site_type', $vv['site_type'] ?? null );
 
         /**
          * /папка сайта/
@@ -169,41 +189,62 @@ class Nyos {
          * /папка сайта/модули/
          */
         define('dir_site_module', $site_dir . 'module' . DS);
+        define('dir_site_module_local', $vv['dir_site_file'] . 'module' . DS);
 
         /**
          * /папка сайта/download/
+         * ( возможно композер сайта )
          */
         define('dir_site_sd', $site_dir . 'download' . DS);
+        /**
+         * /sites/folder/download/
+         * ( только базовая папка сайта с содержимым )
+         */
+        define('dir_site_sd_local', $vv['dir_site_file'] . 'download' . DS);
         //echo $vv['sd'];
         $vv['sd'] = dir_site_sd;
+        $vv['sd_local'] = dir_site_sd_local;
 
         /**
          * /папка сайта/template/
          */
         define('dir_site_tpl', $site_dir . 'template' . DS);
+
         /**
          * /папка сайта/template.didrive/
          * 2
          */
         define('dir_site_tpldidr', $site_dir . 'template.didrive' . DS);
 
-
         /**
          * /didrive/
          * 2
          */
-        define('dir_didr', DS . 'didrive' . DS);
+        define('dir_didr', DS . 'vendor'
+                . DS . 'didrive'
+                . DS . 'base'
+                . DS . 'design'
+                . DS . 'design'
+                . DS);
 
         /**
          * /didrive/module/
          * 2
          */
-        define('dir_didr_module', DS . 'didrive' . DS . 'module' . DS);
+        define('dir_didr_module',
+                DS . 'vendor'
+                . DS . 'didrive'
+                . DS . 'base'
+                . DS . 'design'
+                . DS . 'module' . DS);
         /**
          * /didrive/tpl/
          * 2
          */
-        define('dir_didr_tpl', DS . 'didrive' . DS . 'tpl' . DS);
+        define('dir_didr_tpl', DS . 'vendor'
+                . DS . 'didrive'
+                . DS . 'base'
+                . DS . 'design' . DS . 'tpl' . DS);
 
 // формируем \Nyos\Nyos::$menu         
         self::getMenu($folder);
@@ -241,14 +282,22 @@ class Nyos {
          * /папка сайта/модули/--текущий мод--/
          */
         define('dir_site_module_nowlev', dir_site_module . $vv['now_level']['cfg.level'] . DS);
+
         /**
          * /папка сайта/модули/--текущий мод--/tpl/
          */
         define('dir_site_module_nowlev_tpl', dir_site_module . $vv['now_level']['cfg.level'] . DS . 'tpl' . DS);
+        define('dir_site_module_nowlev_tpl_local', dir_site_module_local . $vv['now_level']['cfg.level'] . DS . 'tpl' . DS);
+
         /**
          * /папка сайта/модули/--текущий мод--/tpl.didrive/
          */
         define('dir_site_module_nowlev_tpldidr', dir_site_module . $vv['now_level']['cfg.level'] . DS . 'tpl.didrive' . DS);
+
+        /**
+         * /папка сайта/модули/--текущий мод--/tpl.inf/
+         */
+        define('dir_site_module_nowlev_tpl_inf', dir_site_module . $vv['now_level']['cfg.level'] . DS . 'tpl.inf' . DS);
 
 
 
@@ -260,7 +309,7 @@ class Nyos {
         define('dir_mods', DS . 'vendor' . DS . 'didrive_mod' . DS);
 
 
-        if (isset($vv['now_level']['type'])) {
+        if (!empty($vv['now_level']['type'])) {
             /**
              * /вендор/модули/текущий модуль (тип)/
              */
@@ -273,6 +322,10 @@ class Nyos {
              * /вендор/модули/текущий модуль (тип)/версия/tpl/
              */
             define('dir_mods_mod_vers_tpl', DS . 'vendor' . DS . 'didrive_mod' . DS . $vv['now_level']['type'] . DS . $vv['now_level']['version'] . DS . 'tpl' . DS);
+            /**
+             * /вендор/модули/текущий модуль (тип)/версия/tpl.inf/
+             */
+            define('dir_mods_mod_vers_tpl_inf', DS . 'vendor' . DS . 'didrive_mod' . DS . $vv['now_level']['type'] . DS . $vv['now_level']['version'] . DS . 'tpl.inf' . DS);
             /**
              * /модули/текущий модуль (тип)/версия/didrive/
              */
@@ -296,24 +349,19 @@ class Nyos {
      */
     public static function getSiteModule() {
 
-        // echo '<br/>'.__LINE__;
-        //if ( sizeof(self::$a_menu) > 0)
         if (!empty(self::$a_menu))
             return self::$a_menu;
-        
-//        $file_cash = DR . dir_site . 'menu.' . substr(\f\translit($_SERVER['HTTP_HOST'], 'uri2'), 0, 15) . '.user.' . $_SESSION['now_user_di']['id'] . '.cash.json';
-//
-//        if (file_exists($file_cash)){
-//            $ar = json_decode(file_get_contents($file_cash), true);
-//            self::$all_menu = $ar['all'];
-//            return self::$a_menu  = $ar['a'];
-//        }
 
-        // echo '<br/>'.__LINE__;
-        //\f\pa(DirSite);
+        //$timer = true;
+        if (isset($timer) && $timer === true) {
+            \f\timer_start(77);
+        }
+
+
         $h = scandir(DR . dir_site_module);
 
         // echo '<Br/>'.__FILE__.' '.__LINE__;
+        // \f\pa($_SESSION);
 
         foreach ($h as $k => $v) {
 
@@ -329,18 +377,28 @@ class Nyos {
 //                }
 //            }
 
-            if (isset($v{2})) {
+            if (!empty($v)) {
 
                 // \f\pa(\Nyos\Nyos::$access_mod);
 
                 $file_cfg = DR . dir_site_module . $v . DS . 'cfg.ini';
+
                 if (file_exists($file_cfg)) {
+
                     $a = parse_ini_file($file_cfg, true);
-                    if (isset($a['type']{0}) && isset($a['version']{0})) {
+
+                    if (!empty($a['type']) && !empty($a['version'])) {
+
                         $a['cfg.level'] = $v;
+
                         if (isset($_SESSION['now_user_di']['access']) &&
                                 (
-                                $_SESSION['now_user_di']['access'] == 'admin' || ( $_SESSION['now_user_di']['access'] == 'moder' && !empty(\Nyos\Nyos::$access_mod) && isset(\Nyos\Nyos::$access_mod[$v]) )
+                                $_SESSION['now_user_di']['access'] == 'admin' ||
+                                (
+                                $_SESSION['now_user_di']['access'] == 'moder' && !empty(\Nyos\Nyos::$access_mod) &&
+                                (
+                                isset(\Nyos\Nyos::$access_mod[$v]) || isset(\Nyos\Nyos::$access_mod['moder'][$v])
+                                ) )
                                 )
                         ) {
                             self::$a_menu[$v] = $a;
@@ -354,16 +412,20 @@ class Nyos {
         //echo DirSite;
         $h = scandir(DR . dir_didr_module);
         foreach ($h as $k => $v) {
-            if (isset($v{2})) {
+            if (!empty($v)) {
                 $file_cfg = DR . dir_didr_module . $v . DS . 'cfg.ini';
                 if (file_exists($file_cfg)) {
                     $a = parse_ini_file($file_cfg, true);
-                    if (isset($a['type']{0}) && isset($a['version']{0})) {
+                    if (!empty($a['type']) && !empty($a['version'])) {
                         $a['cfg.level'] = $v;
 
-                        if (isset($_SESSION['now_user_di']['access']) &&
+                        if (!empty($_SESSION['now_user_di']['access']) && (
+                                $_SESSION['now_user_di']['access'] == 'admin' ||
                                 (
-                                $_SESSION['now_user_di']['access'] == 'admin' || ( $_SESSION['now_user_di']['access'] == 'moder' && !empty(\Nyos\Nyos::$access_mod) && isset(\Nyos\Nyos::$access_mod[$v]) )
+                                $_SESSION['now_user_di']['access'] == 'moder' && !empty(\Nyos\Nyos::$access_mod) && (
+                                isset(\Nyos\Nyos::$access_mod[$v]) || isset(\Nyos\Nyos::$access_mod['moder'][$v])
+                                )
+                                )
                                 )
                         ) {
                             self::$a_menu['di'][$v] = $a;
@@ -376,7 +438,11 @@ class Nyos {
         }
 
 //        file_put_contents($file_cash, json_encode(['all' => self::$all_menu, 'a' => self::$a_menu]));
-        
+
+        if (isset($timer) && $timer === true) {
+            echo '<br/>#' . __LINE__ . ' ' . \f\timer_stop(77);
+        }
+
         return self::$a_menu;
     }
 
@@ -388,7 +454,7 @@ class Nyos {
      * на выходе секрет
      */
     public static function creatSecret($text) {
-        return md5('wwdv' . $text . date('ymd', $_SERVER['REQUEST_TIME']));
+        return md5(filemtime(__FILE__) . 'wwdv' . $text . date('ymd', $_SERVER['REQUEST_TIME']));
     }
 
     /**
@@ -400,7 +466,7 @@ class Nyos {
      * @return boolean
      */
     public static function checkSecret(string $secret, string $text) {
-        if ($secret == md5('wwdv' . $text . date('ymd', $_SERVER['REQUEST_TIME']))) {
+        if ($secret == md5(filemtime(__FILE__) . 'wwdv' . $text . date('ymd', $_SERVER['REQUEST_TIME']))) {
             return true;
         } else {
             return false;
@@ -438,7 +504,7 @@ class Nyos {
             if (isset($rf))
                 foreach ($rf as $k => $v) {
 
-                    if (isset($v{0}) && $v != '.' && $v != '..' && file_exists(DR . dir_site_module . $v . DS . 'cfg.ini')) {
+                    if (!empty($v) && $v != '.' && $v != '..' && file_exists(DR . dir_site_module . $v . DS . 'cfg.ini')) {
 
                         try {
                             self::$menu[$v] = parse_ini_file(DR . dir_site_module . $v . DS . 'cfg.ini', true);
@@ -457,996 +523,26 @@ class Nyos {
                 }
 
             //echo DirSite;
-            $h = scandir(DR . dir_didr_module);
+            if (is_dir(DR . dir_didr_module))
+                $h = scandir(DR . dir_didr_module);
 
-            foreach ($h as $k => $v) {
-                if (isset($v{2})) {
-                    $file_cfg = DR . dir_didr_module . $v . DS . 'cfg.ini';
-                    if (file_exists($file_cfg)) {
-                        $a = parse_ini_file($file_cfg, true);
-                        if (isset($a['type']{0}) && isset($a['version']{0})) {
-                            $a['cfg.level'] = $v;
-                            self::$menu['di'][$v] = $a;
+            if (!empty($h))
+                foreach ($h as $k => $v) {
+                    if (!empty($v)) {
+                        $file_cfg = DR . dir_didr_module . $v . DS . 'cfg.ini';
+                        if (file_exists($file_cfg)) {
+                            $a = parse_ini_file($file_cfg, true);
+                            if (!empty($a['type']) && !empty($a['version'])) {
+                                $a['cfg.level'] = $v;
+                                self::$menu['di'][$v] = $a;
+                            }
                         }
                     }
                 }
-            }
 
-            if ($enable_cash === true && isset(self::$cash_file_menu{5}))
+            if ($enable_cash === true && !empty(self::$cash_file_menu))
                 file_put_contents(self::$cash_file_menu, json_encode(self::$menu));
         }
     }
 
 }
-
-class Nyos_old {
-
-// $sql = $db->sql_query('SELECT * FROM `2domain` WHERE `domain` = \'' . addslashes($domain) . '\' LIMIT 1;');
-// echo $status;
-// если есть результат у запроса
-//        if ($db->sql_numrows($sql) == 1) {
-//
-//            $e = $db->sql_fr($sql);
-//
-//            if ($now === true) {
-//                self::$folder_now = self::$folder_all[$e['domain']] = $e['folder'];
-//            } else {
-//                self::$folder_all[$e['domain']] = $e['folder'];
-//            }
-//
-//            return $e['folder'];
-//        }
-// если нет результата у запроса
-//        else {
-//            return false;
-//        }
-// старт
-//function nyos(){}
-//if ( $nyos -> isDomainAvailible('http://www.ruseller.com'))
-//{
-//echo "Работает и готов отвечать на запросы!";
-//}
-//else
-//{
-//echo "Ой, сайт не доступен.";
-//}
-// проверяем есть ил инет домен
-    public static function domain($db, $domain) {
-//global $status;
-//$status = '';
-
-        $d = str_replace('www.', '', strtolower($domain));
-        $a = $db->sql_query("SELECT *
-            FROM `2domain`
-            WHERE `domain`='" . addslashes($d) . "'
-            LIMIT 1;");
-
-        if ($db->sql_numrows($a) == 1) {
-            return $db->sql_fr($a);
-        } else {
-            \f\db\db2_insert($db, '2domain', array('domain' => $d), 'yes');
-            return array('domain' => $d, 'new' => true);
-        }
-
-//echo $status;
-    }
-
-    /**
-     * проверяем оплачен хостинг или нет
-     * @param type $db
-     * @param type $folder
-     * @param type $domain
-     * @return type
-     */
-    public static function hosting_pay($db = false, $folder = false, $domain = false) {
-
-// global $status;
-// $status = '';
-
-        if ($domain === false)
-            $domain = $_SERVER['HTTP_HOST'];
-
-        $domain = str_replace('www.', '', strtolower($domain));
-
-        if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/9.site/' . $folder . '/hosting_end')) {
-            if (( filemtime($_SERVER['DOCUMENT_ROOT'] . '/9.site/' . $folder . '/hosting_end') + 3600 * 23 * 7 ) < $_SERVER['REQUEST_TIME']) {
-                unlink($_SERVER['DOCUMENT_ROOT'] . '/9.site/' . $folder . '/hosting_end');
-            } else {
-                return file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/9.site/' . $folder . '/hosting_end');
-            }
-        } elseif (file_exists($_SERVER['DOCUMENT_ROOT'] . '/9.site/' . $folder . '/hosting_ok')) {
-            if (( filemtime($_SERVER['DOCUMENT_ROOT'] . '/9.site/' . $folder . '/hosting_ok') + 3600 * 23 * 7 ) < $_SERVER['REQUEST_TIME']) {
-                unlink($_SERVER['DOCUMENT_ROOT'] . '/9.site/' . $folder . '/hosting_ok');
-            } else {
-                return true;
-            }
-        }
-
-
-        if ($db !== false) {
-            $sql = $db->sql_query("SELECT summa, folder
-                FROM
-                    `2hosting_reg`
-                WHERE
-                    `folder`='" . addslashes($folder) . "'
-                    AND `oplachen_do` < curdate()
-                LIMIT 1;");
-
-// если дата оплаты меньше текущей
-            if ($db->sql_numrows($sql) == 1) {
-                $wr = $db->sql_fr($a);
-
-                if (is_dir($_SERVER['DOCUMENT_ROOT'] . '/9.site/' . $folder)) {
-                    file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/9.site/' . $folder . '/hosting_end', $wr['summa']);
-                    return $wr['summa'];
-                }
-            }
-// если оплачено дальше текущей даты
-            else {
-                if (is_dir($_SERVER['DOCUMENT_ROOT'] . '/9.site/' . $folder)) {
-                    file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/9.site/' . $folder . '/hosting_ok', '');
-                    return true;
-                }
-            }
-        }
-    }
-
-    public static function creat_menu($folder) {
-
-        if (self::$menu === false) {
-// self::get_menu( $folder );
-            self::get_menu($folder);
-        }
-
-//echo '<pre>'; print_r(self::menu); echo '</pre>';
-
-        $out = array();
-
-        foreach (self::$menu as $k => $v) {
-            for ($e = 1; $e <= 10; $e ++) {
-
-                if (!isset($out[$e]))
-                    $out[$e] = array();
-
-                if (isset($v['in-menu-' . $e]) && $v['in-menu-' . $e] == 'da') {
-                    $out[$e][$k] = $v;
-                }
-            }
-        }
-
-        return $out;
-    }
-
-    /**
-     * очищаем кеши
-     * @param type $folder
-     */
-    public static function clearCash($folder) {
-
-        if (!defined('DS'))
-            define('DS', DIRECTORY_SEPARATOR);
-
-        $dir = $_SERVER['DOCUMENT_ROOT'] . DS . '9.site' . DS . $folder . DS;
-
-        if (is_dir($dir)) {
-
-            $list = scandir($dir . 'module');
-
-            foreach ($list as $k => $v) {
-
-// кеши конфигов менюшек
-                if (strpos($v, '_cash_mnu.') !== false && strpos($v, '.cfg.php') !== false)
-                    unlink($dir . 'module' . DS . $v);
-            }
-        }
-    }
-
-    /**
-     * получаем список модулей
-     * @param type $folder
-     * @param type $access
-     * didrive - дидрайв настройки
-     * adm - админсмкие настройки сайта
-     * @return string
-     */
-    public static function getModuleAdmin($folder = null, $access = 'didrive') {
-
-        if (!defined('DS'))
-            define('DS', DIRECTORY_SEPARATOR);
-
-// echo '11111111-'.domain;
-
-        if (isset($folder) && $folder !== null) {
-            
-        } elseif (isset(self::$folder)) {
-            $folder = self::$folder;
-        } else {
-            return \f\end3('Ошибка в указании папки #' . __LINE__, false);
-        }
-
-        $cash_dir = $_SERVER['DOCUMENT_ROOT'] . DS . '9.site' . DS . $folder . DS . 'module' . DS;
-        $refresh = file_exists(DirSite . 'nocreat_cash_module') ? true : false;
-        $_file_cash = $cash_dir . '_cash_mnu.' . $access . '.' . domain . '.cfg.php';
-
-//if (    strpos( $_SERVER['DOCUMENT_ROOT'], ':' ) === false )
-//echo '<br/>'.__FILE__.'#'.__LINE__;
-//if ( $refresh !== false )
-//echo '<br/>'.__FILE__.'#'.__LINE__;
-//if( file_exists($_file_cash)
-//    && filectime( $_file_cash ) > $_SERVER['REQUEST_TIME']-3600*24*7 )
-//echo '<br/>'.__FILE__.'#'.__LINE__;
-// берём инфу из файла кеша
-        if (1 == 2 && file_exists($_file_cash) && filectime($_file_cash) > $_SERVER['REQUEST_TIME'] - 3600 * 24 * 7 && $refresh === false && strpos($_SERVER['DOCUMENT_ROOT'], ':') === false) {
-            $a_menu = unserialize(file_get_contents($_file_cash));
-            return \f\end3('выбрали модули ' . $access . ' (кеш)', true, $a_menu);
-        }
-// формируем список своими силами
-        else {
-
-            $dir = $_SERVER['DOCUMENT_ROOT'] . DS . '0.site' . DS . $access . '.module' . DS;
-            $rf = scandir($dir);
-
-//echo '<pre>'; print_r( $rf ); echo '</pre>';
-
-            $a_menu = array();
-
-            foreach ($rf as $k => $v) {
-
-                if (is_dir($dir . $v) && is_file($dir . $v . DS . 'cfg.ini')) {
-
-                    $a_menu[$v] = parse_ini_file($dir . $v . DS . 'cfg.ini', true);
-                    $a_menu[$v]['cfg.level'] = $v;
-
-                    /*
-                      if (isset($a_menu[$v]['cfg.name']) && $a_menu[$v]['cfg.name'] == 'from_book') {
-
-                      if ($a_menu[$v]['type'] == 'book.txt' &&
-                      $a_menu[$v]['version'] == '2' &&
-                      is_file(DirSite . 'download' . DS . domain . DS . $v . '.fb2.arr')
-                      ) {
-                      $dtxt = unserialize(file_get_contents(DirSite . 'download' . DS . domain . DS . $v . '.fb2.arr'));
-                      $a_menu[$v]['name'] = // $TitleN =
-                      ( isset($dtxt['info']['autor']{1}) ? $dtxt['info']['autor'] . ': ' : '' ) .
-                      ( isset($dtxt['info']['title']{1}) ? ' ' . $dtxt['info']['title'] : ')' );
-                      }
-                      }
-                     */
-
-//echo $v.' -=- '.__LINE__.'<br/>';
-                }
-
-//echo __LINE__.'<br/>';
-            }
-//echo DirSite.DS.'module'.DS.domain.'_cash.cfg.php-'.sizeof($a_menu);
-
-            file_put_contents($_file_cash, serialize($a_menu));
-//echo '<pre>'; print_r( $data ); echo '</pre>';
-            return \f\end3('выбрали модули ' . $access . ' (реал тайм, не кеш)', true, $a_menu);
-        }
-
-        return \f\end3('Ошибка при выборке #' . __LINE__, false);
-    }
-
-    /**
-     * создаём пароль
-     * @param цифра $number сколько знаков в пароле
-     * @param цифра $type ( 1 сложный, 2 простой)
-     * @return строка
-     */
-    public static function creat_pass($number = 7, $type = 1) {
-        $arr = array(
-            'a', 'b', 'c', 'd', 'e', 'f',
-            'g', 'h', 'i', 'j', 'k', 'l',
-            'm', 'n', 'o', 'p', 'r', 's',
-            't', 'u', 'v', 'x', 'y', 'z',
-            'A', 'B', 'C', 'D', 'E', 'F',
-            'G', 'H', 'I', 'J', 'K', 'L',
-            'M', 'N', 'O', 'P', 'R', 'S',
-            'T', 'U', 'V', 'X', 'Y', 'Z',
-            '1', '2', '3', '4', '5', '6',
-            '7', '8', '9', '0'
-        );
-
-        $arr2 = array(
-            '.', ',',
-            '(', ')',
-            '[', ']',
-            '!', '?',
-            '&', '_',
-            '%', '@'
-        );
-
-        $pass = '';
-
-        for ($i = 1; $i < $number; $i++) {
-            $index = rand(0, count($arr) - 1);
-            $pass .= $arr[$index];
-        }
-
-        if ($type == 1) {
-            $pass .= $arr2[rand(0, count($arr2) - 1)];
-        } else {
-            $pass .= rand(0, count($arr) - 1);
-        }
-
-        return $pass;
-    }
-
-// список данных
-    public static function alist($db = false, $type = 'folder', $filtr1 = false, $filtr2 = false) {
-
-        if ($type == 'modules') {
-
-            $rr = self::alist($db, 'site'); // , str_replace( 'www.', '', strtolower($_SERVER['HTTP_HOST']) ) );
-            $d = str_replace('www.', '', strtolower($_SERVER['HTTP_HOST']));
-
-            if (isset($rr[$d]{2})) {
-
-                self::$a_menu = array();
-                $h = scandir($_SERVER['DOCUMENT_ROOT'] . '/9.site/' . $rr[$d] . '/module/');
-
-                foreach ($h as $k => $v) {
-                    if (isset($v{2}) && file_exists($_SERVER['DOCUMENT_ROOT'] . DS . '9.site' . DS . $rr[$d] . DS . 'module' . DS . $v . DS . 'cfg.ini')) {
-                        self::$a_menu[$v] = parse_ini_file($_SERVER['DOCUMENT_ROOT'] . DS . '9.site'
-                                . DS . $rr[$d] . DS . 'module' . DS . $v . DS . 'cfg.ini', true);
-                        self::$a_menu[$v]['cfg.level'] = $v;
-                    }
-                }
-
-                return self::$a_menu;
-            }
-        } elseif ($type == 'site') {
-
-//$status = '';
-            $x = $db->sql_query("SELECT *
-                    FROM
-                        `2domain`
-                    ORDER BY
-                        `domain` ASC;");
-//echo $status;
-
-            while ($r = $db->sql_fr($x)) {
-                if (isset($r['domain']{1})) {
-                    $d[$r['domain']] = $r['folder'];
-
-                    if ($r['domain'] == strtolower(str_replace('www.', '', $_SERVER['HTTP_HOST'])))
-                        self::$folder = $r['folder'];
-                }
-            }
-
-            return $d;
-        } elseif ($type == 'hosting') {
-
-//$status = '';
-            $x = $db->sql_query("SELECT *
-                    FROM
-                        `2hosting_reg`
-                    WHERE
-                        `status` = 'job'
-                    ORDER BY
-                        `oplachen_do` ASC;");
-//echo $status;
-
-            $d = array();
-
-            while ($r = $db->sql_fr($x)) {
-
-// $startdate = date("Y-m-d 00:00:00");
-                $st = strtotime($r['oplachen_do'] . ' 00:00:00');
-                $st2 = strtotime(date('Y-m-d H:i:s', $_SERVER['REQUEST_TIME']) . ' + 1 month');
-
-                /*
-                  echo '-------<br/>';
-                  echo $st.'<Br/>';
-                  echo date( 'Y-m-d H:i:s', $st ).'<br/>';
-                  echo $st2.'<Br/>';
-                  echo date( 'Y-m-d H:i:s', $st2 ).'<br/>';
-                  echo ( $st2 - $st ).'<Br/>';
-                  echo $_SERVER['REQUEST_TIME'].'<Br/>';
-                 */
-
-                $r['td_st'] = ( $st2 > $st ) ? 'warning' : '';
-
-                $d[$r['folder']] = $r;
-            }
-
-// echo '<pre>'; print_r( $d ); echo '<pre>';
-
-            return $d;
-        } elseif ($type == 'admins') {
-//$status = '';
-            $x = $db->sql_query("SELECT
-                        *
-                        ,`folder` as `f`
-                    FROM
-                        `0access`
-                    ORDER BY
-                        `folder` DESC,
-                        `login` ASC
-                        ;");
-//echo $status;
-
-            $v2 = array();
-
-            while ($r = $db->sql_fr($x)) {
-                $v2[$r['id']] = $r;
-            }
-
-            return $v2;
-        }
-//if( $type == 'folder' ){
-        else {
-            $o = scandir($_SERVER['DOCUMENT_ROOT'] . '/9.site');
-
-            ksort($o);
-
-            foreach ($o as $k => $v) {
-                if (isset($v{2}) && is_dir($_SERVER['DOCUMENT_ROOT'] . '/9.site/' . $v)) {
-                    $v2[$v] = 1;
-                }
-            }
-        }
-
-        return $v2;
-    }
-
-//Возвращает true, если домен доступен
-    function isDomainAvailible($domain) {
-
-//Проверка на правильность URL
-        if (!filter_var($domain, FILTER_VALIDATE_URL)) {
-            return false;
-        }
-
-//Инициализация curl
-        $curlInit = curl_init($domain);
-        curl_setopt($curlInit, CURLOPT_CONNECTTIMEOUT, 10);
-        curl_setopt($curlInit, CURLOPT_HEADER, true);
-        curl_setopt($curlInit, CURLOPT_NOBODY, true);
-        curl_setopt($curlInit, CURLOPT_RETURNTRANSFER, true);
-
-//Получаем ответ
-        $response = curl_exec($curlInit);
-
-        curl_close($curlInit);
-
-        if ($response)
-            return true;
-
-        return false;
-    }
-
-// Замена cURL для функции file_get_contents()
-    function file_get_contents_curl($url) {
-        $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); //Устанавливаем параметр, чтобы curl возвращал данные, вместо того, чтобы выводить их в браузер.
-        curl_setopt($ch, CURLOPT_URL, $url);
-
-        $data = curl_exec($ch);
-        curl_close($ch);
-
-        return $data;
-    }
-
-//Получаем последний статус Twitter
-    function get_status($twitter_id, $hyperlinks = true) {
-
-// Использовать функцию очень просто:
-// echo get_status('catswhocode');
-
-        $c = curl_init();
-        curl_setopt($c, CURLOPT_URL, "http://twitter.com/statuses/user_timeline/$twitter_id.xml?count=1");
-        curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
-        $src = curl_exec($c);
-        curl_close($c);
-        preg_match('/<text>(.*)<\/text>/', $src, $m);
-        $status = htmlentities($m[1]);
-        if ($hyperlinks)
-            $status = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]", '<a href="%5C%22%5C%5C0%5C%22">\\0</a>', $status);
-        return($status);
-    }
-
-//Загружаем и сохраняем изображения со страницы с помощью cURL
-//$i = 1;
-//$l = 101;
-//
-//while ($i < $l) {
-//    $html = get_data('http://somedomain.com/id/'.$i.'/');
-//    getImages($html);
-//    $i += 1;
-//}
-
-    function getImages($html) {
-        $matches = array();
-        $regex = '~http://somedomain.com/images/(.*?)\.jpg~i';
-        preg_match_all($regex, $html, $matches);
-        foreach ($matches[1] as $img) {
-            saveImg($img);
-        }
-    }
-
-    function saveImg($uri) {
-        $data = $this->file_get_contents_curl($url);
-        file_put_contents('photos/' . $name . '.jpg', $data);
-    }
-
-    /* Конвертируем валюту с помощью cURl и Google
-     * Пересчет валюты достаточно простое дело, но курсы достаточно часто изменяются,
-     * поэтому приходится использовать сервисы, подобные Google, для получения текущих
-     * значений курса пересчета. Функция currency()
-     * получает 3 параметра: исходная валюта, целевая валюта и сумма.
-     */
-
-    function currency($from_Currency, $to_Currency, $amount) {
-        $amount = urlencode($amount);
-        $from_Currency = urlencode($from_Currency);
-        $to_Currency = urlencode($to_Currency);
-        $url = "http://www.google.com/ig/calculator?hl=en&q=$amount$from_Currency=?$to_Currency";
-        $ch = curl_init();
-        $timeout = 0;
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1)");
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
-        $rawdata = curl_exec($ch);
-        curl_close($ch);
-        $data = explode('"', $rawdata);
-        $data = explode(' ', $data['3']);
-        $var = $data['0'];
-        return round($var, 2);
-    }
-
-// Получаем информацию о размере файла с помощью cURL
-    function remote_filesize($url, $user = "", $pw = "") {
-        ob_start();
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_HEADER, 1);
-        curl_setopt($ch, CURLOPT_NOBODY, 1);
-
-        if (!empty($user) && !empty($pw)) {
-            $headers = array('Authorization: Basic ' . base64_encode("$user:$pw"));
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        }
-
-        $ok = curl_exec($ch);
-        curl_close($ch);
-        $head = ob_get_contents();
-        ob_end_clean();
-
-        $regex = '/Content-Length:\s([0-9].+?)\s/';
-        $count = preg_match($regex, $head, $matches);
-
-        return isset($matches[1]) ? $matches[1] : "unknown";
-    }
-
-// Загрузка через FTP с помощью cURL
-    function curl_post_file_on_ftp($puth_new_file_on_server, $ftp_login, $ftp_pass, $ftp_host, $ftp_puth_file) {
-
-// Открываем файл
-//$file = fopen("/path/to/file", "r");
-        $file = fopen($puth_new_file_on_server, "r");
-
-// URL содержит большую часть нужной информации
-//$url = "ftp://username:password@mydomain.com:21/path/to/new/file";
-        $url = 'ftp://' . $ftp_login . ':' . $ftp_pass . '@' . $ftp_host . ':21' . $ftp_puth_file;
-
-        $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-
-// Устанавливаем опции
-        curl_setopt($ch, CURLOPT_UPLOAD, 1);
-        curl_setopt($ch, CURLOPT_INFILE, $fp);
-        curl_setopt($ch, CURLOPT_INFILESIZE, filesize($puth_new_file_on_server));
-
-// Устанавливаем режим ASCII (то есть - файл текстовой)
-        curl_setopt($ch, CURLOPT_FTPASCII, 1);
-
-        $output = curl_exec($ch);
-        curl_close($ch);
-    }
-
-// добавление сайта в систему продажи ссылок
-    function salelink_add_site($domain, $system, $user, $password, $dop = FALSE) {
-        self::$logs .= 'start ' . __FUNCTION__ . '<br/>' .
-                'дата = ' . $domain . '/' . $system . '/' . $user . '/' . $password . '/' . $dop . '<br/>';
-
-        if ($system == 'mainlink') {
-
-            if (!is_file(DirAll . 'class/nusoap-0.9.5/lib/nusoap.php'))
-                die('неописуемая ситуация с файлом класса #' . __LINE__);
-
-            require_once( DirAll . 'class/nusoap-0.9.5/lib/nusoap.php' );
-
-            if (isset($dop{1}) && $dop == 'sys_IsAuthenticated') {
-                $login = new nusoap_client("http://api.mainlink.ru/start.asmx?WSDL", true);
-//$login->setUseCurl(1);
-                $res = $login->call($dop);
-//echo '<pre>'; print_r($res); echo '</pre>';
-                return $res[$dop . 'Result'];
-            } elseif (
-// получение списка сайтов привязанных к пользователю
-                    isset($dop{1}) && $dop == 'mlapi_GetSites'
-            ) {
-                $login = new nusoap_client("http://api.mainlink.ru/start.asmx?WSDL", true);
-
-// если локально то не используем курл
-//if( strpos($_SERVER['DOCUMENT_ROOT'], 'W:') !== false ){}
-//else{ $login->setUseCurl(1); }
-                $login->setUseCurl(0);
-
-                $res = $login->call('sys_LogIn', array(
-                    'Login' => $user,
-                    'Password' => $password
-                ));
-                $cookies = $login->getCookies();
-
-                $webmaster_url = "http://api.mainlink.ru/webmaster.asmx?WSDL";
-                $wm = new nusoap_client($webmaster_url, true);
-                $wm->setUseCurl(0);
-                foreach ($cookies as $cookie) {
-                    $wm->setCookie($cookie['name'], $cookie['value']);
-                }
-                return $wm->call($dop);
-            } else {
-
-                $login = new nusoap_client("http://api.mainlink.ru/start.asmx?WSDL", true);
-// $advert = new nusoap_client("http://api.mainlink.ru/advert.asmx?WSDL", true);
-// если локально то не используем курл
-//if( strpos($_SERVER['DOCUMENT_ROOT'], 'W:') !== false ){}
-//else{ $login->setUseCurl(1); }
-
-                $login->setUseCurl(0);
-
-                $res = $login->call('sys_LogIn', array(
-                    'Login' => $user,
-                    'Password' => $password
-                ));
-
-//echo '<hr>'.__LINE__.'<hr>
-//    <h2>Запрос</h2><pre>' . htmlspecialchars($login->request, ENT_QUOTES) . '</pre>
-//    <h2>Ответ</h2><pre>' . htmlspecialchars($login->response, ENT_QUOTES) . '</pre>
-//    <hr>результат<pre>'; print_r($res); echo '</pre><hr>'.__LINE__.'<hr>';
-// echo $balance = $login->call('sys_Balance', array());
-
-                $cookies = $login->getCookies();
-
-//echo '<hr><hr>';
-//echo '<pre>'; print_r($cookies); echo '</pre>';
-//echo '<hr><hr>';
-//echo '<h2>Запрос</h2>';
-//echo '<pre>' . htmlspecialchars($login->request, ENT_QUOTES) . '</pre>';
-//echo '<h2>Ответ</h2>';
-//echo '<pre>' . htmlspecialchars($login->response, ENT_QUOTES) . '</pre>';
-
-                $webmaster_url = "http://api.mainlink.ru/webmaster.asmx?WSDL";
-                $wm = new nusoap_client($webmaster_url, true);
-
-                $wm->setUseCurl(0);
-
-                foreach ($cookies as $cookie) {
-                    $wm->setCookie($cookie['name'], $cookie['value']);
-//SetCookie($cookie['name'], $cookie['value']);
-                }
-
-                $ddom = htmlspecialchars($domain);
-                $res = $wm->call('mlapi_AddSite', array(
-                    'Url' => $ddom, // ] url домена (без http://),
-                    'Name' => 'site ' . $ddom, // название сайта,
-                    'Description' => $ddom . ' sensation sites', // ] описание сайта,
-// [CategoryID] каталог сайта (см. справочники),
-                    'CategoryID' => 22, // ] каталог сайта (см. справочники),
-                    'ScanSite' => TRUE // ] сканирование сайта при добавлении (true-сканировать, false-не сканировать)
-                ));
-
-//echo '<hr><hr>';
-//echo '<pre>'; print_r($res); echo '</pre>';
-//echo '<hr><hr>';
-
-                echo '<h2>Запрос</h2>' .
-                '<pre>' . htmlspecialchars($wm->request, ENT_QUOTES) . '</pre>' .
-                '<h2>Ответ</h2>' .
-                '<pre>' . htmlspecialchars($wm->response, ENT_QUOTES) . '</pre>';
-
-                if (isset($res['mlapi_AddSiteResult']) && is_numeric($res['mlapi_AddSiteResult'])) {
-                    if ($res['mlapi_AddSiteResult'] == 0) {
-                        $err = 'неавторизован';
-                    } elseif ($res['mlapi_AddSiteResult'] == -1) {
-                        $err = 'некорректный урл домена';
-                    } elseif ($res['mlapi_AddSiteResult'] == -2) {
-                        $err = 'сайт с таким URL уже есть в базе';
-                    } elseif ($res['mlapi_AddSiteResult'] == -3) {
-                        $err = 'сайт недоступен';
-                    } elseif ($res['mlapi_AddSiteResult'] == -4) {
-                        $err = 'не добавлен (проблема с СУБД)';
-                    } elseif ($res['mlapi_AddSiteResult'] == -5) {
-                        $err = 'письмо не отправлено';
-                    } elseif ($res['mlapi_AddSiteResult'] == -6) {
-                        $err = 'код не найден (или секьюрный файл не найден в коде';
-                    } else {
-                        $err = 'добавлен сайт #' . $res['mlapi_AddSiteResult'] . ' ';
-                    }
-                } else {
-                    $err = 'обработка ошибочна #' . __LINE__ . ' ';
-                }
-
-                return $err;
-            }
-
-            self::$logs .= 'end = ok<br/>';
-            return true;
-        }
-
-        self::$logs .= 'end = error // так как не выбрана система<br/>';
-        return false;
-    }
-
-    function get_external_type() {
-
-        if (function_exists('curl_init'))
-            return self::$connecttype = 'CURL';
-        elseif (function_exists('fsockopen'))
-            return self::$connecttype = 'SOCKET';
-        else
-            return self::$connecttype = 'NONE';
-    }
-
-    function get_external_html($host, $uri, $type = 'http') {
-        /*
-          return '<?xml version="1.0" encoding="utf-8" ?> <page> <domains><domain><emails><action-status/><email><name>info</name></email><found>1</found><total>1</total></emails><name>dol-lenina.ru</name><status>added</status><emails-max-count>1000</emails-max-count></domain></domains> </page>';
-          //$nyos->get_external_html
-         */
-
-        /*
-          return '<?xml version="1.0" encoding="utf-8"?> <page> <domains><domain><emails><action-status/><email><name>boss</name></email><email><name>support</name></email><email><name>sergey</name></email><found>3</found><total>3</total></emails><name>72sms.ru</name><status>added</status><emails-max-count>1000</emails-max-count></domain></domains> </page>';
-         */
-
-        if (self::$connecttype === FALSE)
-            self::$get_external_type() . '<br/>';
-
-        if (self::$connecttype == 'CURL') {
-
-
-            if ($type == 'https') {
-
-                $curl = curl_init();
-                curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
-                curl_setopt($curl, CURLOPT_MAXREDIRS, 5);
-
-//curl_setopt($curl, CURLOPT_POST, 1);
-//curl_setopt($curl, CURLOPT_POST, 1);
-//curl_setopt($curl, CURLOPT_POSTFIELDS, urlencode_array($postargs));
-
-                curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
-                curl_setopt($curl, CURLOPT_URL, 'https://' . $host . '/' . $uri);
-
-                $data = curl_exec($curl);
-//$info = curl_getinfo($curl);
-                curl_close($curl);
-
-//return htmlspecialchars($data);
-                return $data;
-            }
-        }
-        if (self::$connecttype == 'SOCKET') {
-
-
-            $fp = fsockopen($host, ( ($type == 'https') ? 443 : 80), $errno, $errstr, 30);
-            if (!$fp) {
-                echo "$errstr ($errno)
-";
-            } else {
-                $query = "GET / HTTP/1.1
-Host: " . $host . "
-Connection: Close
-User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)
-" . $uri;
-
-                fwrite($fp, $query);
-                $page = '';
-
-                while (!feof($fp)) {
-                    $page .= fgets($fp, 4096);
-                }
-
-                fclose($fp);
-
-                if (!empty($page))
-                    return $page;
-//echo '<pre>'.$page.'</pre>';
-            }
-        }
-        if (self::$connecttype == 'NONE') {
-            
-        }
-    }
-
-    /*
-      //$icquin = "197829943";
-      function get_status_icq($uin)
-      {
-
-      if (!is_numeric($uin)) return FALSE;
-
-      $fp = fsockopen('status.icq.com', 80, $errno, $errstr, 8);
-
-      if (!$fp)
-      {
-      return "N/A";
-      }
-      else
-      {
-      $request = "HEAD /online.gif?icq=$uin HTTP/1.0\r\n"
-      ."Host: web.icq.com\r\n"
-      ."Connection: close\r\n\r\n";
-      fputs($fp, $request);
-
-      do
-      {
-      $response = fgets($fp, 1024);
-      }
-      while (!feof($fp) && !stristr($response, 'Location'));
-
-      fclose($fp);
-
-      if( strstr($response, 'online1') ) return 'Online';
-      if( strstr($response, 'online0') ) return 'Offline';
-      if( strstr($response, 'online2') ) return 'N/A';
-      // N/A means, this User set the Option, his Online
-      // Status cannot be shown over the Internet
-
-      return FALSE;
-      }
-      }
-      //echo GetICQ($icquin);
-     */
-
-    /**
-     * получаем к какой папке привязан домен
-     * @param класс $db
-     * @param строка $domain
-     */
-    public static function getFolder0($db, $domain = null) {
-
-// global $status;
-
-        if ($domain === null) {
-            $now = true;
-            $domain = str_replace('www.', '', strtolower($_SERVER['HTTP_HOST']));
-        } else {
-            $now = false;
-        }
-
-        if (isset(self::$folder_all[$domain]))
-            return self::$folder_all[$domain];
-
-        $sql = $db->sql_query('SELECT * FROM `2domain` WHERE `domain` = \'' . addslashes($domain) . '\' LIMIT 1;');
-
-// echo $status;
-// если есть результат у запроса
-        if ($db->sql_numrows($sql) == 1) {
-            $e = $db->sql_fr($sql);
-
-            if ($now === true) {
-                self::$folder_now = $e['folder'];
-                self::$folder_all[$e['domain']] = $e['folder'];
-            } else {
-                self::$folder_all[$e['domain']] = $e['folder'];
-            }
-
-            return $e['folder'];
-        }
-// если нет результата у запроса
-        else {
-            return false;
-        }
-    }
-
-    /**
-     * проверяем включён режим кеша одной страницы или нет
-     * @param string $folder
-     * @return type
-     */
-    public static function checkOnOffCashSiteOnePage(string $folder) {
-
-        return file_exists($_SERVER['DOCUMENT_ROOT'] . '/9.site/' . $folder . '/site_is_one_page') ? true : false;
-    }
-
-    /**
-     * запись страницы в кеш
-     * @param string $html
-     */
-    public static function creatCashSiteIsOnePage(string $html) {
-
-        if (!is_dir($_SERVER['DOCUMENT_ROOT'] . '/0.cash'))
-            mkdir($_SERVER['DOCUMENT_ROOT'] . '/0.cash', 0755);
-
-        file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/0.cash/' . strtolower($_SERVER['HTTP_HOST']) . '.one_page.cash24', $html);
-    }
-
-    /**
-     * чистим кеш если он есть
-     * @param type $type
-     * time4 - если файлу кеша больше 4 часов, то удаляем
-     */
-    public static function clearCashSiteIsOnePage($type = null) {
-
-        $file = $_SERVER['DOCUMENT_ROOT'] . '/0.cash/' . strtolower($_SERVER['HTTP_HOST']) . '.one_page.cash24';
-
-        if (file_exists($file) &&
-                (
-                ( $type == 'time4' && $_SERVER['REQUEST_TIME'] - 3600 * 4 > filectime($file) ) || $type === null
-                )
-        ) {
-            unlink($file);
-        }
-    }
-
-    /**
-     * показ данных из кеша страницы по домену
-     * @return boolean
-     */
-    public static function showCashSiteIsOnePage() {
-
-        if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/0.cash/' . strtolower($_SERVER['HTTP_HOST']) . '.one_page.cash24')) {
-            die(file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/0.cash/' . strtolower($_SERVER['HTTP_HOST']) . '.one_page.cash24'));
-        }
-    }
-
-    public static function enter($db, $host, $login, $pass) {
-
-//        $ww = $db->sql_query('SELECT *
-//            FROM
-//                `0access`
-//                ,`2domain`
-//            WHERE
-//                `2domain`.`domain` = \'' . addslashes($host) . '\'
-//                AND `2domain`.`folder` = `0access`.`folder`
-//                AND (
-//                    `0access`.`login` = \'' . addslashes($login) . '\'
-//                    OR
-//                    `0access`.`mail` = \'' . addslashes($login) . '\'
-//                    )
-//                AND `0access`.`pass` = \'' . md5($pass) . '\'
-//            LIMIT 1
-//            ;');
-
-        $ww = $db->sql_query('SELECT a.*
-            FROM
-                0access a
-                ,2domain d
-            WHERE
-                d.`domain` = \'' . addslashes($host) . '\'
-                AND 
-                d.`folder` = a.`folder`
-                AND (
-                    a.`login` = \'' . addslashes($login) . '\'
-                    OR
-                    a.`mail` = \'' . addslashes($login) . '\'
-                    )
-                AND a.`pass` = \'' . md5($pass) . '\'
-            LIMIT 1
-            ;');
-
-        if ($db->sql_numrows($ww) == 1) {
-            $_SESSION['now_user_di'] = $db->sql_fr($ww);
-
-            require_once $_SERVER['DOCUMENT_ROOT'] . '/0.site/exe/lk/class.php';
-            $da = \Nyos\mod\lk::getUserOptions($db, $_SESSION['now_user_di']['id']);
-            \f\pa($da);
-
-            die(__LINE__);
-
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-}
-
-// $nyos = new nyos();

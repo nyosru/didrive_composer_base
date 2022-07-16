@@ -15,12 +15,13 @@ require( $_SERVER['DOCUMENT_ROOT'] . '/all/ajax.start.php' );
 // проверяем секрет
 if (
 // $_REQUEST['action'] == 'edit_items_dop' 
+        (
         isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit_items_dop' 
-        && !empty($_REQUEST['item_id']) && !empty($_REQUEST['dop_pole']) 
-        && !empty($_REQUEST['s']) && \Nyos\Nyos::checkSecret( $_REQUEST['s'], $_REQUEST['item_id'] . $_REQUEST['dop_pole'] ) !== false
-) {
-    
-}
+        && !empty($_REQUEST['item_id']) && !empty($_REQUEST['dop_pole']) && !empty($_REQUEST['s']) 
+        && \Nyos\Nyos::checkSecret( $_REQUEST['s'], $_REQUEST['item_id'] . $_REQUEST['dop_pole'] ) !== false
+        )
+        
+) { }
 //
 else {
     \f\end2('Произошла неописуемая ситуация #' . __LINE__ . ' обратитесь к администратору ' // . $_REQUEST['id'] . ' && ' . $_REQUEST['secret']

@@ -1,0 +1,65 @@
+{% spaceless %}
+    <div class="panel-content">
+        <div class="row mrg20">
+            <div class="col-md-12 col-sm-12 col-lg-12">
+                <div class="widget grd pad50-65">
+
+                    <br/>
+                    <br/>
+
+                    <h2>Модули сайта</h2>
+
+                    {#{ pa(session) }#}
+                    {#{ pa(a_menu) }}
+                    {{ pa(all_menu) }#}
+
+                    <br/>
+                    <br/>
+                    {% set io = false %}                    
+                    {% for k, v in a_menu %}
+
+                        {% if v.up is defined %}
+                            {% if v.name|length > 2 %}
+                                {% set io = true %}
+                                <a href="/i.didrive.php?level={{ k }}" class="btn-menu-didrive xxbrd-rd5 btn btn-lg btn-outline-info" style='margin: 3px;' >
+                                    <b>
+                                        {% if v.icon is defined %}
+                                        <span class="xglyphicon {{ v.icon }}" aria-hidden="true"></span>
+                                        {% endif %}
+                                        {{ v.name }}
+                                    </b>
+                                </a>
+
+                            {% endif %}
+                        {% endif %}
+
+                    {% endfor %}
+
+                    {% if io == true %}
+                        <br/>
+                        <br/>
+                    {% endif %}
+
+                    {% for k, v in a_menu %}
+
+                        {% if v.didrive_hide is defined and v.didrive_hide == 'da' %}
+
+                        {% else %}
+                            {% if v.name|length > 2 %}
+
+                                <a href="/i.didrive.php?level={{ k }}" class="btn-menu-didrive xbtn-xs xxbrd-rd5 btn btn-md btn-light" style='margin: 2px;'>
+                                    <span class="glyphicon {{ v.icon }}" aria-hidden="true"></span>
+                                    {{ v.name }}
+                                </a>
+
+                            {% endif %}
+                        {% endif %}
+
+                    {% endfor %}
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endspaceless %}

@@ -1,7 +1,7 @@
 {
     "name": "didrive/base",
     "description": "didrive cms - class and function ",
-    "version": "0.1.4",
+    "version": "3.0.0",
 
     "keywords": [
         "nyos",
@@ -10,33 +10,35 @@
 
     "homepage": "https://uralweb.info/php/#classes",
     "license": "MIT",
-    "authors": [
-        {
-            "name": "Сергей Бакланов",
-            "email": "1@nyos.ru",
-            "homepage": "https://uralweb.info",
-            "role": "Developer"
-        }
-    ],
+    "authors": [{
+        "name": "Сергей Бакланов",
+        "email": "1@nyos.ru",
+        "homepage": "https://uralweb.info",
+        "role": "Developer"
+    }],
 
     "require": {
-        "php" : ">=7.1.0"
-        , "twig/twig" : ">=2.0.0"
-        
-        , "didrive/f" : ">=1.0.0"
-        , "didrive_mod/vars_on_site" : ">=0.0.1"
-        
-        , "twbs/bootstrap" : ">=4.3.1"
-        , "components/jquery" : ">=3.3.1"
-        
-        , "didrive_mod/backword" : ">=0.0.5"
-        
-    }
-    ,
+
+        "php": ">=7.1.0",
+        "twig/twig": ">=2.0.0"
+
+        ,
+        "didrive/f": ">=1.0.0",
+        "didrive/aut": ">=0.1.0",
+        "didrive_mod/vars_on_site": ">=0.0.1"
+
+        ,
+        "twbs/bootstrap": ">=4.3.1",
+        "components/jquery": ">=3.3.1"
+
+        ,
+        "didrive_mod/backword": ">=0.0.5"
+
+    },
     "autoload": {
-        "files": [ 
+        "files": [
             "Nyos.php",
             "Nyos_image.php"
-        ]    
+        ]
     }
 }

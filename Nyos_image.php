@@ -4,10 +4,10 @@ namespace Nyos;
 
 // строки безопасности
 
-if (!defined('IN_NYOS_PROJECT'))
-    die('<center><br><br><br><br><p>Сработала защита <b>c.NYOS</b> от злостных розовых хакеров.</p>
-    <a href="http://www.uralweb.info" target="_blank">Создание, дизайн, вёрстка и программирование сайтов.</a><br />
-    <a href="http://www.nyos.ru" target="_blank">Только отдельные услуги: Дизайн, вёрстка и программирование сайтов.</a>');
+//if (!defined('IN_NYOS_PROJECT'))
+//    die('<center><br><br><br><br><p>Сработала защита <b>c.NYOS</b> от злостных розовых хакеров.</p>
+//    <a href="http://www.uralweb.info" target="_blank">Создание, дизайн, вёрстка и программирование сайтов.</a><br />
+//    <a href="http://www.nyos.ru" target="_blank">Только отдельные услуги: Дизайн, вёрстка и программирование сайтов.</a>');
 
 
 
@@ -119,19 +119,19 @@ class Nyos_image {
 //            imagealphablending(self::$image, true);
             imagesavealpha(self::$image, true);
 
-            if (isset($save_to_file{3}))
+            if ( !empty($save_to_file))
                 imagepng(self::$image, $save_to_file);
 
             imagepng(self::$image);
         } elseif (self::$mime == 'image/gif') {
 
-            if (isset($save_to_file{3}))
+            if ( !empty($save_to_file))
                 imagegif(self::$image, $save_to_file);
 
             imagegif(self::$image);
         } elseif (self::$mime == 'image/jpeg') {
 
-            if (isset($save_to_file{3}))
+            if ( !empty($save_to_file))
                 imagejpeg(self::$image, $save_to_file);
 
             imagejpeg(self::$image);
